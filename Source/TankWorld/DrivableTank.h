@@ -36,13 +36,13 @@ private:
 		UStaticMeshComponent* m_tankRootMesh;
 
 	UPROPERTY(EditAnywhere)
-		USceneComponent* m_turretRoot;
-
-	//UPROPERTY(EditAnywhere)
-		//UStaticMeshComponent* m_tankMesh;
+		UStaticMeshComponent* m_tankRootMesh2;
 
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* m_turretMesh;
+
+	UPROPERTY(EditAnywhere)
+		UStaticMeshComponent* m_barrelMesh;
 
 	UPROPERTY(EditAnywhere)
 		USpringArmComponent* m_springArm;
@@ -58,11 +58,25 @@ private:
 	float m_ammoTimer;
 	float m_regenRate;
 
-	void Accelerate();
-	void TurnTankL();
-	void TurnTankR();
+	void Accelerate(float AxisValue);
+	void TurnTank(float AxisValue);
+
+	/*void StartAccelerate();
+	void StartTurnTankL();
+	void StartTurnTankR();
+
+	void StopAccelerate();
+	void StopTurnTankL();
+	void StopTurnTankR();*/
+
 	void TurnTurretX(float AxisValue);
+
 	FVector CurrentVelocity;
+	FRotator TurnAmount;
+
+	bool isAccelerating;
+	bool isTurningLeft;
+	bool isTurningRight;
 
 	class UTankPawnMovementComponent* MyMovementComponent;
 	virtual UPawnMovementComponent* GetMovementComponent() const override;

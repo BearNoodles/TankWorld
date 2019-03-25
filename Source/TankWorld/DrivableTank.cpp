@@ -10,36 +10,62 @@
 // Sets default values
 ADrivableTank::ADrivableTank()
 {
+
+	m_root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	RootComponent = m_root;
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> cubeMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> cylinderMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cylinder.Shape_Cylinder'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> sphereMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
 	//GetMesh()->Set
-	m_tankRootMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TankMesh"));
-	RootComponent = m_tankRootMesh;
-
-	m_turretRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Turret"));
-	m_turretRoot->SetupAttachment(RootComponent);
-	m_turretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TurretMesh"));
-	m_turretMesh->SetupAttachment(m_turretRoot);
-
+	m_tankRootMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BodyMesh"));
+	m_tankRootMesh->SetupAttachment(m_root);
+	//RootComponent = m_tankRootMesh;
 
 	if (cubeMesh.Succeeded())
 	{
 		m_tankRootMesh->SetStaticMesh(cubeMesh.Object);
-		m_turretMesh->SetStaticMesh(cubeMesh.Object);
 	}
 
-	m_turretRoot->RelativeLocation = FVector(0.0f, 45.0f, 110.0f);
-	m_turretRoot->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
-	m_turretRoot->RelativeScale3D = FVector(0.5f, 1.5f, 0.5f);
+	m_tankRootMesh->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
+	m_tankRootMesh->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
+	m_tankRootMesh->SetWorldScale3D(FVector(2.75f, 1.75f, 1.0f));
+
+	//m_turretRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Turret"));
+	m_turretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TurretMesh"));
+	m_turretMesh->SetupAttachment(m_tankRootMesh);
+
+	if (cylinderMesh.Succeeded())
+	{
+		m_turretMesh->SetStaticMesh(sphereMesh.Object);
+	}
+	
+
+	m_turretMesh->RelativeLocation = FVector(0.0f, 0.0f, 50.0f);
+	m_turretMesh->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
+	m_turretMesh->SetWorldScale3D(FVector(1.75f, 1.75f, 1.0f));
+
+	//m_turretRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Turret"));
+	m_barrelMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BarrelMesh"));
+	m_barrelMesh->SetupAttachment(m_turretMesh);
+
+	if (cylinderMesh.Succeeded())
+	{
+		m_barrelMesh->SetStaticMesh(cylinderMesh.Object);
+	}
+
+	m_barrelMesh->RelativeLocation = FVector(0.0f, 0.0f, 80.0f);
+	m_barrelMesh->RelativeRotation = FRotator(-90.0f, 0.0f, 0.0f);
+	m_barrelMesh->SetWorldScale3D(FVector(0.4f, 0.4f, 2.5f));
 
 	m_launchPoint = CreateDefaultSubobject<USceneComponent>(TEXT("LaunchPoint"));
 	m_launchPoint->SetupAttachment(m_turretMesh);
 
 	m_springArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	m_springArm->SetupAttachment(m_turretRoot);
-	m_springArm->RelativeRotation = FRotator(-45.0f, 90.0f, 0.0f);
+	m_springArm->SetupAttachment(m_turretMesh);
+	m_springArm->RelativeRotation = FRotator(-45.0f, 0.0f, 0.0f);
 	m_springArm->RelativeLocation = FVector(-40.0f, 0.0f, 110.0f);
 	m_springArm->TargetArmLength = 400.0f;
 	m_springArm->bEnableCameraLag = true;
@@ -77,66 +103,99 @@ void ADrivableTank::Tick(float DeltaTime)
 		}
 	}
 
+	/*if (isAccelerating)
+	{
+		Accelerate();
+	}
+	else
+	{
+		StopAccelerate();
+	}
+	if (isTurningLeft)
+	{
+		TurnTankL();
+	}
+	else
+	{
+		StopTurnTankL();
+	}
+	if (isTurningRight)
+	{
+		TurnTankR();
+	}
+	else
+	{
+		StopTurnTankR();
+	}*/
+
 	//if (WasInputKeyJustPressed(EKeys::LeftMouseButton))
 	{
 
 	}
 
-	/*if (!CurrentVelocity.IsZero())
+	if (!CurrentVelocity.IsZero())
 	{
-		FVector NewLocation = GetActorLocation() + (CurrentVelocity * DeltaTime);
-		SetActorLocation(NewLocation);
-	}*/
+		AddActorLocalOffset(CurrentVelocity * DeltaTime);
+	}
 
+	//UE_LOG(LogTemp, Warning, TEXT("Turning"));
+	//AddActorLocalRotation(TurnAmount * DeltaTime);
+	SetActorRelativeRotation(TurnAmount * DeltaTime * 100);
+
+	TurnAmount.Yaw = 0;
 	//TODO press a key to launch a projectile
 
 }
 
-void ADrivableTank::Accelerate()
+void ADrivableTank::Accelerate(float AxisValue)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Your message5AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"));
 	// Move at 100 units per second right or left
-	m_tankRootMesh->AddForce(m_tankRootMesh->GetForwardVector() * 100000);
-	//CurrentVelocity = FMath::Clamp(AxisValue, -1.0f, 1.0f) * 100.0f * m_tankRoot->GetForwardVector();
+	//m_tankRootMesh->AddForce(m_tankRootMesh->GetForwardVector() * 1000000);
+	CurrentVelocity = FMath::Clamp(AxisValue, -1.0f, 1.0f) * 100.0f * m_tankRootMesh->GetForwardVector();
 }
 
-void ADrivableTank::TurnTankL()
+void ADrivableTank::TurnTank(float AxisValue)
 {
-
-	UE_LOG(LogTemp, Warning, TEXT("Your messageLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL"));
+	UE_LOG(LogTemp, Warning, TEXT("Your message555555555555555555555555555555555555555555"));
 	//m_tankRootMesh->AddTorque(FVector(0,0,1000));
 	//m_turretRoot->GetComponentTransform.GetComponentRotation();
 	//FRotator NewRotation = GetActorRotation();
-	//FRotator NewRotation = m_tankRootMesh->GetComponentRotation();
-	//NewRotation.Yaw += AxisValue;
-	////SetActorRotation(NewRotation);
-	//m_tankRootMesh->SetRelativeRotation(NewRotation);
+	FRotator NewRotation2 = m_tankRootMesh->GetComponentRotation();
+	//FRotator NewRotation = FRotator(0,0,0);
+	NewRotation2.Yaw += AxisValue;
+	//TurnAmount = FRotator(0,0,0);
+	//TurnAmount.Yaw = AxisValue;
+	//SetActorRotation(NewRotation);
+	//AddActorLocalRotation(NewRotation);
 	//m_turretRoot->GetComponentTransform().SetRotation(NewRotation);
-}
+	//m_root->SetWorldRotation(NewRotation);
 
-void ADrivableTank::TurnTankR()
-{
-
-	UE_LOG(LogTemp, Warning, TEXT("Your messageRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR"));
-	//m_tankRootMesh->AddTorque(FVector(0,0,1000));
-	//m_turretRoot->GetComponentTransform.GetComponentRotation();
-	//FRotator NewRotation = GetActorRotation();
-	//FRotator NewRotation = m_tankRootMesh->GetComponentRotation();
-	//NewRotation.Yaw += AxisValue;
-	////SetActorRotation(NewRotation);
-	//m_tankRootMesh->SetRelativeRotation(NewRotation);
-	//m_turretRoot->GetComponentTransform().SetRotation(NewRotation);
+	m_root->SetRelativeRotation(NewRotation2);
 }
+//
+//void ADrivableTank::TurnTankR()
+//{
+//	UE_LOG(LogTemp, Warning, TEXT("Your messageRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR"));
+//	//m_tankRootMesh->AddTorque(FVector(0,0,1000));
+//	//m_turretRoot->GetComponentTransform.GetComponentRotation();
+//	//FRotator NewRotation = GetActorRotation();
+//	//FRotator NewRotation = m_tankRootMesh->GetComponentRotation();
+//	//NewRotation.Yaw += AxisValue;
+//	////SetActorRotation(NewRotation);
+//	//m_tankRootMesh->SetRelativeRotation(NewRotation);
+//	//m_turretRoot->GetComponentTransform().SetRotation(NewRotation);
+//}
 
 void ADrivableTank::TurnTurretX(float AxisValue)
 {
 	//m_turretRoot->GetComponentTransform.GetComponentRotation();
 	//FRotator NewRotation = GetActorRotation();
 	
-	FRotator NewRotation = m_turretRoot->GetComponentRotation();
+	FRotator NewRotation = m_turretMesh->GetComponentRotation();
 	NewRotation.Yaw += AxisValue;
 	//SetActorRotation(NewRotation);
-	m_turretRoot->SetRelativeRotation(NewRotation);
+	m_turretMesh->SetRelativeRotation(NewRotation);
 	//m_turretRoot->GetComponentTransform().SetRotation(NewRotation);
 }
 
@@ -145,9 +204,9 @@ void ADrivableTank::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	InputComponent->BindAction("Accelerate", IE_Repeat, this, &ADrivableTank::Accelerate);
-	InputComponent->BindAction("Turn Tank L", IE_Repeat, this, &ADrivableTank ::TurnTankL);
-	InputComponent->BindAction("Turn Tank R", IE_Repeat, this, &ADrivableTank ::TurnTankR);
+	InputComponent->BindAxis("Accelerate", this, &ADrivableTank::Accelerate);
+	InputComponent->BindAxis("Turn Tank", this, &ADrivableTank::TurnTank);
+
 	InputComponent->BindAxis("Turn Turret X", this, &ADrivableTank ::TurnTurretX);
 }
 
