@@ -11,7 +11,8 @@
 ADrivableTank::ADrivableTank()
 {
 
-	m_root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	//m_root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	m_root = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Root"));
 	RootComponent = m_root;
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -20,22 +21,23 @@ ADrivableTank::ADrivableTank()
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> cylinderMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cylinder.Shape_Cylinder'"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> sphereMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
 	//GetMesh()->Set
-	m_tankRootMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BodyMesh"));
-	m_tankRootMesh->SetupAttachment(m_root);
+	//m_tankRootMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BodyMesh"));
+	//m_tankRootMesh->SetupAttachment(m_root);
 	//RootComponent = m_tankRootMesh;
 
 	if (cubeMesh.Succeeded())
 	{
-		m_tankRootMesh->SetStaticMesh(cubeMesh.Object);
+		//m_tankRootMesh->SetStaticMesh(cubeMesh.Object);
 	}
 
-	m_tankRootMesh->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
-	m_tankRootMesh->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
-	m_tankRootMesh->SetWorldScale3D(FVector(2.75f, 1.75f, 1.0f));
+	//m_tankRootMesh->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
+	//m_tankRootMesh->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
+	//m_tankRootMesh->SetWorldScale3D(FVector(2.75f, 1.75f, 1.0f));
 
 	//m_turretRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Turret"));
 	m_turretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TurretMesh"));
-	m_turretMesh->SetupAttachment(m_tankRootMesh);
+	//m_turretMesh->SetupAttachment(m_tankRootMesh);
+	m_turretMesh->SetupAttachment(m_root);
 
 	if (cylinderMesh.Succeeded())
 	{
@@ -49,6 +51,7 @@ ADrivableTank::ADrivableTank()
 
 	//m_turretRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Turret"));
 	m_barrelMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BarrelMesh"));
+	//m_barrelMesh->SetupAttachment(m_turretMesh);
 	m_barrelMesh->SetupAttachment(m_turretMesh);
 
 	if (cylinderMesh.Succeeded())
@@ -65,7 +68,7 @@ ADrivableTank::ADrivableTank()
 
 	m_springArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	m_springArm->SetupAttachment(m_turretMesh);
-	m_springArm->RelativeRotation = FRotator(-45.0f, 0.0f, 0.0f);
+	m_springArm->RelativeRotation = FRotator(-15.0f, 0.0f, 0.0f);
 	m_springArm->RelativeLocation = FVector(-40.0f, 0.0f, 110.0f);
 	m_springArm->TargetArmLength = 400.0f;
 	m_springArm->bEnableCameraLag = true;
@@ -78,6 +81,8 @@ ADrivableTank::ADrivableTank()
 
 	MyMovementComponent = CreateDefaultSubobject<UTankPawnMovementComponent>(TEXT("MovementComponent"));
 	MyMovementComponent->UpdatedComponent = RootComponent;
+
+	m_speed = 300;
 }
 
 // Called when the game starts or when spawned
@@ -133,10 +138,12 @@ void ADrivableTank::Tick(float DeltaTime)
 
 	}
 
-	if (!CurrentVelocity.IsZero())
+	/*if (!CurrentVelocity.IsZero())
 	{
 		AddActorLocalOffset(CurrentVelocity * DeltaTime);
-	}
+	}*/
+
+	m_root->AddForce(m_acceleration);
 
 	//UE_LOG(LogTemp, Warning, TEXT("Turning"));
 	//AddActorLocalRotation(TurnAmount * DeltaTime);
@@ -149,21 +156,24 @@ void ADrivableTank::Tick(float DeltaTime)
 
 void ADrivableTank::Accelerate(float AxisValue)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Your message5AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"));
 	// Move at 100 units per second right or left
 	//m_tankRootMesh->AddForce(m_tankRootMesh->GetForwardVector() * 1000000);
-	CurrentVelocity = FMath::Clamp(AxisValue, -1.0f, 1.0f) * 100.0f * m_tankRootMesh->GetForwardVector();
+	//CurrentVelocity = FMath::Clamp(AxisValue, -1.0f, 1.0f) * m_speed * m_tankRootMesh->GetForwardVector();
+	CurrentVelocity = FMath::Clamp(AxisValue, -1.0f, 1.0f) * m_speed * m_root->GetForwardVector();
+	//m_acceleration = FMath::Clamp(AxisValue, -1.0f, 1.0f) * m_tankRootMesh->GetForwardVector() * 1000000;
+	m_acceleration = FMath::Clamp(AxisValue, -1.0f, 1.0f) * m_root->GetForwardVector() * 1000000;
 }
 
 void ADrivableTank::TurnTank(float AxisValue)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Your message555555555555555555555555555555555555555555"));
-	//m_tankRootMesh->AddTorque(FVector(0,0,1000));
+	//m_root->AddTorque(FVector(0, 0 , 10000000 * AxisValue));
+	m_root->AddTorqueInRadians(FVector(0, 0 , 10 * AxisValue));
+	//m_root->AddAngularImpulse(FVector(0, 0, 1000000 * AxisValue));
 	//m_turretRoot->GetComponentTransform.GetComponentRotation();
 	//FRotator NewRotation = GetActorRotation();
-	FRotator NewRotation2 = m_tankRootMesh->GetComponentRotation();
-	//FRotator NewRotation = FRotator(0,0,0);
-	NewRotation2.Yaw += AxisValue;
+	//FRotator NewRotation2 = m_root->GetComponentRotation();
+	//FRotator NewRotation2 = FRotator(0,0,0);
+	//NewRotation2.Yaw += AxisValue;
 	//TurnAmount = FRotator(0,0,0);
 	//TurnAmount.Yaw = AxisValue;
 	//SetActorRotation(NewRotation);
@@ -171,7 +181,9 @@ void ADrivableTank::TurnTank(float AxisValue)
 	//m_turretRoot->GetComponentTransform().SetRotation(NewRotation);
 	//m_root->SetWorldRotation(NewRotation);
 
-	m_root->SetRelativeRotation(NewRotation2);
+	//m_root->SetRelativeRotation(NewRotation2);
+	//m_root->AddLocalRotation(NewRotation2);
+	//AddActorLocalRotation(NewRotation2);
 }
 //
 //void ADrivableTank::TurnTankR()
@@ -192,10 +204,12 @@ void ADrivableTank::TurnTurretX(float AxisValue)
 	//m_turretRoot->GetComponentTransform.GetComponentRotation();
 	//FRotator NewRotation = GetActorRotation();
 	
-	FRotator NewRotation = m_turretMesh->GetComponentRotation();
+	//FRotator NewRotation = m_turretMesh->GetComponentRotation();
+	FRotator NewRotation = FRotator(0, 0, 0);
 	NewRotation.Yaw += AxisValue;
 	//SetActorRotation(NewRotation);
-	m_turretMesh->SetRelativeRotation(NewRotation);
+	//m_turretMesh->SetRelativeRotation(NewRotation);
+	m_turretMesh->AddLocalRotation(NewRotation);
 	//m_turretRoot->GetComponentTransform().SetRotation(NewRotation);
 }
 

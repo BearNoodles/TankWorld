@@ -30,13 +30,11 @@ public:
 private:
 
 	UPROPERTY(EditAnywhere)
-		USceneComponent* m_root;
+		//USceneComponent* m_root;
+		UStaticMeshComponent* m_root;
 
-	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* m_tankRootMesh;
-
-	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* m_tankRootMesh2;
+	/*UPROPERTY(EditAnywhere)
+		UStaticMeshComponent* m_tankRootMesh;*/
 
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* m_turretMesh;
@@ -53,6 +51,7 @@ private:
 	UPROPERTY(EditAnywhere)
 		USceneComponent* m_launchPoint;
 
+	int m_speed;
 	int m_ammoMax;
 	int m_ammoCurrent;
 	float m_ammoTimer;
@@ -72,6 +71,7 @@ private:
 	void TurnTurretX(float AxisValue);
 
 	FVector CurrentVelocity;
+	FVector m_acceleration;
 	FRotator TurnAmount;
 
 	bool isAccelerating;
