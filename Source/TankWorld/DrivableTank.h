@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "Camera/CameraComponent.h"
 
 #include "DrivableTank.generated.h"
@@ -35,6 +36,24 @@ private:
 
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* m_tankRootMesh;
+
+	UPROPERTY(EditAnywhere)
+		UStaticMeshComponent* m_wheelMesh0;
+	UPROPERTY(EditAnywhere)
+		UStaticMeshComponent* m_wheelMesh1;
+	UPROPERTY(EditAnywhere)
+		UStaticMeshComponent* m_wheelMesh2;
+	UPROPERTY(EditAnywhere)
+		UStaticMeshComponent* m_wheelMesh3;
+
+	UPROPERTY(EditAnyWhere)
+		UPhysicsConstraintComponent* m_constraint0;
+	UPROPERTY(EditAnyWhere)
+		UPhysicsConstraintComponent* m_constraint1;
+	UPROPERTY(EditAnyWhere)
+		UPhysicsConstraintComponent* m_constraint2;
+	UPROPERTY(EditAnyWhere)
+		UPhysicsConstraintComponent* m_constraint3;
 
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* m_turretMesh;
@@ -71,7 +90,8 @@ private:
 	void TurnTurretX(float AxisValue);
 
 	FVector CurrentVelocity;
-	FVector m_acceleration;
+	float m_acceleration;
+	float m_maxSpeed;
 	FRotator TurnAmount;
 
 	bool isAccelerating;
