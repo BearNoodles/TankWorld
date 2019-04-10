@@ -37,23 +37,47 @@ private:
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* m_tankRootMesh;
 
-	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* m_wheelMesh0;
-	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* m_wheelMesh1;
-	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* m_wheelMesh2;
-	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* m_wheelMesh3;
+	//UPROPERTY(EditAnywhere)
+	//	UStaticMeshComponent* m_wheelMeshL0;
+	//UPROPERTY(EditAnywhere)
+	//	UStaticMeshComponent* m_wheelMeshL1;
+	//UPROPERTY(EditAnywhere)
+	//	UStaticMeshComponent* m_wheelMeshL2;
+	//UPROPERTY(EditAnywhere)
+	//	UStaticMeshComponent* m_wheelMeshL3;
+	//UPROPERTY(EditAnywhere)
+	//	UStaticMeshComponent* m_wheelMeshR0;
+	//UPROPERTY(EditAnywhere)
+	//	UStaticMeshComponent* m_wheelMeshR1;
+	//UPROPERTY(EditAnywhere)
+	//	UStaticMeshComponent* m_wheelMeshR2;
+	//UPROPERTY(EditAnywhere)
+	//	UStaticMeshComponent* m_wheelMeshR3;
 
-	UPROPERTY(EditAnyWhere)
-		UPhysicsConstraintComponent* m_constraint0;
-	UPROPERTY(EditAnyWhere)
-		UPhysicsConstraintComponent* m_constraint1;
-	UPROPERTY(EditAnyWhere)
-		UPhysicsConstraintComponent* m_constraint2;
-	UPROPERTY(EditAnyWhere)
-		UPhysicsConstraintComponent* m_constraint3;
+	UPROPERTY(EditAnywhere)
+		TArray<UStaticMeshComponent*> m_wheelMeshArray;
+
+	int m_wheelCount = 8;
+
+	//UPROPERTY(EditAnyWhere)
+	//	UPhysicsConstraintComponent* m_constraintL0;
+	//UPROPERTY(EditAnyWhere)
+	//	UPhysicsConstraintComponent* m_constraintL1;
+	//UPROPERTY(EditAnyWhere)
+	//	UPhysicsConstraintComponent* m_constraintL2;
+	//UPROPERTY(EditAnyWhere)
+	//	UPhysicsConstraintComponent* m_constraintL3;
+	//UPROPERTY(EditAnyWhere)
+	//	UPhysicsConstraintComponent* m_constraintR0;
+	//UPROPERTY(EditAnyWhere)
+	//	UPhysicsConstraintComponent* m_constraintR1;
+	//UPROPERTY(EditAnyWhere)
+	//	UPhysicsConstraintComponent* m_constraintR2;
+	//UPROPERTY(EditAnyWhere)
+	//	UPhysicsConstraintComponent* m_constraintR3;
+
+	UPROPERTY(EditAnywhere)
+		TArray<UPhysicsConstraintComponent*> m_constraintArray;
 
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* m_turretMesh;
@@ -91,6 +115,7 @@ private:
 
 	FVector CurrentVelocity;
 	float m_acceleration;
+	float m_torque;
 	float m_maxSpeed;
 	FRotator TurnAmount;
 

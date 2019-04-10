@@ -26,7 +26,7 @@ ADrivableTank::ADrivableTank()
 	m_tankRootMesh->SetSimulatePhysics(true);
 	//RootComponent = m_tankRootMesh;
 
-	if (cubeMesh.Succeeded())
+	if (bodyMesh.Succeeded())
 	{
 		m_tankRootMesh->SetStaticMesh(bodyMesh.Object);
 	}
@@ -38,65 +38,188 @@ ADrivableTank::ADrivableTank()
 
 	FAttachmentTransformRules rules = FAttachmentTransformRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false);
 
+	m_wheelMeshArray = TArray<UStaticMeshComponent*>();
+	m_wheelMeshArray.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshL0")));
+	m_wheelMeshArray.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshL1")));
+	m_wheelMeshArray.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshL2")));
+	m_wheelMeshArray.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshL3")));
+	m_wheelMeshArray.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshR0")));
+	m_wheelMeshArray.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshR1")));
+	m_wheelMeshArray.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshR2")));
+	m_wheelMeshArray.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshR3")));
 
-	m_wheelMesh0 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMesh0"));
-	m_wheelMesh1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMesh1"));
-	m_wheelMesh2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMesh2"));
-	m_wheelMesh3 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMesh3"));
 
-	m_wheelMesh0->SetSimulatePhysics(true);
-	m_wheelMesh1->SetSimulatePhysics(true);
-	m_wheelMesh2->SetSimulatePhysics(true);
-	m_wheelMesh3->SetSimulatePhysics(true);
+	/*m_wheelMeshL0 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshL0"));
+	m_wheelMeshL1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshL1"));
+	m_wheelMeshL2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshL2"));
+	m_wheelMeshL3 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshL3"));
+	m_wheelMeshR0 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshR0"));
+	m_wheelMeshR1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshR1"));
+	m_wheelMeshR2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshR2"));
+	m_wheelMeshR3 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshR3"));*/
 
-	m_constraint0 = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("Contraint0"));
-	m_constraint0->ComponentName1.ComponentName = "WheelMesh0";
-	m_constraint0->ComponentName2.ComponentName = "BodyMesh";
-	m_constraint0->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	m_constraint0->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	m_constraint0->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	m_constraint0->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
-	m_constraint0->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
-	m_constraint0->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
-	m_constraint0->SetDisableCollision(true);
-	m_constraint0->AttachToComponent(m_tankRootMesh, rules, TEXT("socket0"));
-	
-	m_constraint1 = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("Contraint1"));
-	m_constraint1->ComponentName1.ComponentName = "WheelMesh1";
-	m_constraint1->ComponentName2.ComponentName = "BodyMesh";
-	m_constraint1->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	m_constraint1->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	m_constraint1->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	m_constraint1->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
-	m_constraint1->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
-	m_constraint1->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
-	m_constraint1->SetDisableCollision(true);
-	m_constraint1->AttachToComponent(m_tankRootMesh, rules, TEXT("socket1"));
+	//m_wheelMeshL0->SetSimulatePhysics(true);
+	//m_wheelMeshL1->SetSimulatePhysics(true);
+	//m_wheelMeshL2->SetSimulatePhysics(true);
+	//m_wheelMeshL3->SetSimulatePhysics(true);
+	//m_wheelMeshR0->SetSimulatePhysics(true);
+	//m_wheelMeshR1->SetSimulatePhysics(true);
+	//m_wheelMeshR2->SetSimulatePhysics(true);
+	//m_wheelMeshR3->SetSimulatePhysics(true);
 
-	m_constraint2 = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("Contraint2"));
-	m_constraint2->ComponentName1.ComponentName = "WheelMesh2";
-	m_constraint2->ComponentName2.ComponentName = "BodyMesh";
-	m_constraint2->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	m_constraint2->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	m_constraint2->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	m_constraint2->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
-	m_constraint2->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
-	m_constraint2->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
-	m_constraint2->SetDisableCollision(true);
-	m_constraint2->AttachToComponent(m_tankRootMesh, rules, TEXT("socket2"));
+	for (int i = 0; i < m_wheelCount; i++)
+	{
+		m_wheelMeshArray[i]->SetSimulatePhysics(true);
+	}
 
-	m_constraint3 = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("Contraint3"));
-	m_constraint3->ComponentName1.ComponentName = "WheelMesh3";
-	m_constraint3->ComponentName2.ComponentName = "BodyMesh";
-	m_constraint3->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	m_constraint3->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	m_constraint3->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	m_constraint3->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
-	m_constraint3->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
-	m_constraint3->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
-	m_constraint3->SetDisableCollision(true);
-	m_constraint3->AttachToComponent(m_tankRootMesh, rules, TEXT("socket3"));
 
+	m_constraintArray = TArray<UPhysicsConstraintComponent*>();
+
+	m_constraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintL0")));
+	m_constraintArray[0]->ComponentName1.ComponentName = "WheelMeshL0";
+
+	m_constraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintL1")));
+	m_constraintArray[1]->ComponentName1.ComponentName = "WheelMeshL1";
+
+	m_constraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintL2")));
+	m_constraintArray[2]->ComponentName1.ComponentName = "WheelMeshL2";
+
+	m_constraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintL3")));
+	m_constraintArray[3]->ComponentName1.ComponentName = "WheelMeshL3";
+
+	m_constraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintR0")));
+	m_constraintArray[4]->ComponentName1.ComponentName = "WheelMeshR0";
+
+	m_constraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintR1")));
+	m_constraintArray[5]->ComponentName1.ComponentName = "WheelMeshR1";
+
+	m_constraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintR2")));
+	m_constraintArray[6]->ComponentName1.ComponentName = "WheelMeshR2";
+
+	m_constraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintR3")));
+	m_constraintArray[7]->ComponentName1.ComponentName = "WheelMeshR3";
+
+	for (int i = 0; i < m_wheelCount; i++)
+	{
+		m_constraintArray[i]->ComponentName2.ComponentName = "BodyMesh";
+		m_constraintArray[i]->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+		m_constraintArray[i]->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+		m_constraintArray[i]->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+		m_constraintArray[i]->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
+		m_constraintArray[i]->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
+		m_constraintArray[i]->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
+		m_constraintArray[i]->SetDisableCollision(true);
+	}
+
+	m_constraintArray[0]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL0"));
+	m_constraintArray[1]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL1"));
+	m_constraintArray[2]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL2"));
+	m_constraintArray[3]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL3"));
+	m_constraintArray[4]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR0"));
+	m_constraintArray[5]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR1"));
+	m_constraintArray[6]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR2"));
+	m_constraintArray[7]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR3"));
+
+#pragma region MyRegion
+
+
+	//m_constraintL0 = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintL0"));
+	//m_constraintL0->ComponentName1.ComponentName = "WheelMeshL0";
+	//m_constraintL0->ComponentName2.ComponentName = "BodyMesh";
+	//m_constraintL0->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintL0->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintL0->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintL0->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
+	//m_constraintL0->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
+	//m_constraintL0->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
+	//m_constraintL0->SetDisableCollision(true);
+	//m_constraintL0->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL0"));
+	//
+	//m_constraintL1 = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintL1"));
+	//m_constraintL1->ComponentName1.ComponentName = "WheelMeshL1";
+	//m_constraintL1->ComponentName2.ComponentName = "BodyMesh";
+	//m_constraintL1->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintL1->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintL1->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintL1->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
+	//m_constraintL1->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
+	//m_constraintL1->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
+	//m_constraintL1->SetDisableCollision(true);
+	//m_constraintL1->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL1"));
+	//
+	//m_constraintL2 = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintL2"));
+	//m_constraintL2->ComponentName1.ComponentName = "WheelMeshL2";
+	//m_constraintL2->ComponentName2.ComponentName = "BodyMesh";
+	//m_constraintL2->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintL2->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintL2->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintL2->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
+	//m_constraintL2->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
+	//m_constraintL2->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
+	//m_constraintL2->SetDisableCollision(true);
+	//m_constraintL2->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL2"));
+	//
+	//m_constraintL3 = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintL3"));
+	//m_constraintL3->ComponentName1.ComponentName = "WheelMeshL3";
+	//m_constraintL3->ComponentName2.ComponentName = "BodyMesh";
+	//m_constraintL3->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintL3->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintL3->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintL3->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
+	//m_constraintL3->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
+	//m_constraintL3->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
+	//m_constraintL3->SetDisableCollision(true);
+	//m_constraintL3->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL3"));
+	//
+	//m_constraintR0 = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintR0"));
+	//m_constraintR0->ComponentName1.ComponentName = "WheelMeshR0";
+	//m_constraintR0->ComponentName2.ComponentName = "BodyMesh";
+	//m_constraintR0->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintR0->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintR0->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintR0->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
+	//m_constraintR0->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
+	//m_constraintR0->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
+	//m_constraintR0->SetDisableCollision(true);
+	//m_constraintR0->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR0"));
+	//			
+	//m_constraintR1 = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintR1"));
+	//m_constraintR1->ComponentName1.ComponentName = "WheelMeshR1";
+	//m_constraintR1->ComponentName2.ComponentName = "BodyMesh";
+	//m_constraintR1->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintR1->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintR1->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintR1->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
+	//m_constraintR1->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
+	//m_constraintR1->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
+	//m_constraintR1->SetDisableCollision(true);
+	//m_constraintR1->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR1"));
+	//			
+	//m_constraintR2 = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintR2"));
+	//m_constraintR2->ComponentName1.ComponentName = "WheelMeshR2";
+	//m_constraintR2->ComponentName2.ComponentName = "BodyMesh";
+	//m_constraintR2->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintR2->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintR2->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintR2->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
+	//m_constraintR2->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
+	//m_constraintR2->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
+	//m_constraintR2->SetDisableCollision(true);
+	//m_constraintR2->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR2"));
+	//			
+	//m_constraintR3 = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintR3"));
+	//m_constraintR3->ComponentName1.ComponentName = "WheelMeshR3";
+	//m_constraintR3->ComponentName2.ComponentName = "BodyMesh";
+	//m_constraintR3->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintR3->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintR3->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+	//m_constraintR3->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
+	//m_constraintR3->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
+	//m_constraintR3->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
+	//m_constraintR3->SetDisableCollision(true);
+	//m_constraintR3->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR3"));
+
+#pragma endregion
 	//m_turretRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Turret"));
 	m_turretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TurretMesh"));
 	//m_turretMesh->SetupAttachment(m_tankRootMesh);
@@ -105,37 +228,83 @@ ADrivableTank::ADrivableTank()
 	if (sphereMesh.Succeeded())
 	{
 		m_turretMesh->SetStaticMesh(sphereMesh.Object);
-		m_wheelMesh0->SetStaticMesh(sphereMesh.Object);
-		m_wheelMesh1->SetStaticMesh(sphereMesh.Object);
-		m_wheelMesh2->SetStaticMesh(sphereMesh.Object);
-		m_wheelMesh3->SetStaticMesh(sphereMesh.Object);
+		//m_wheelMeshL0->SetStaticMesh(sphereMesh.Object);
+		//m_wheelMeshL1->SetStaticMesh(sphereMesh.Object);
+		//m_wheelMeshL2->SetStaticMesh(sphereMesh.Object);
+		//m_wheelMeshL3->SetStaticMesh(sphereMesh.Object);
+		//m_wheelMeshR0->SetStaticMesh(sphereMesh.Object);
+		//m_wheelMeshR1->SetStaticMesh(sphereMesh.Object);
+		//m_wheelMeshR2->SetStaticMesh(sphereMesh.Object);
+		//m_wheelMeshR3->SetStaticMesh(sphereMesh.Object);
+		for (int i = 0; i < m_wheelCount; i++)
+		{
+			m_wheelMeshArray[i]->SetStaticMesh(sphereMesh.Object);
+		}
 	}
 
 	m_turretMesh->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
 	m_turretMesh->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
 	m_turretMesh->SetWorldScale3D(FVector(1.75f, 1.75f, 1.0f));
 
+	for (int i = 0; i < m_wheelCount; i++)
+	{
+		m_wheelMeshArray[i]->RelativeLocation = FVector(0.0f, 0.0f, -50.0f);
+		//m_wheelMeshArray[i]->RelativeRotation = FRotator(0.0f, 0.0f, -90.0f);
+		m_wheelMeshArray[i]->SetWorldScale3D(FVector(1.0f, 0.5f, 1.0f));
+	}
+	m_wheelMeshArray[0]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL0"));
+	m_wheelMeshArray[1]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL1"));
+	m_wheelMeshArray[2]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL2"));
+	m_wheelMeshArray[3]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL3"));
+	m_wheelMeshArray[4]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR0"));
+	m_wheelMeshArray[5]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR1"));
+	m_wheelMeshArray[6]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR2"));
+	m_wheelMeshArray[7]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR3"));
 
-	m_wheelMesh0->RelativeLocation = FVector(0.0f, 0.0f, -50.0f);
-	//m_wheelMesh0->RelativeRotation = FRotator(0.0f, 0.0f, -90.0f);
-	m_wheelMesh0->SetWorldScale3D(FVector(1.0f, 0.5f, 1.0f));
-	m_wheelMesh0->AttachToComponent(m_tankRootMesh, rules, TEXT("socket0"));
+#pragma region MyRegion
 
-	m_wheelMesh1->RelativeLocation = FVector(0.0f, 0.0f, -50.0f);
-	//m_wheelMesh1->RelativeRotation = FRotator(0.0f, 0.0f, -90.0f);
-	m_wheelMesh1->SetWorldScale3D(FVector(1.0f, 0.5f, 1.0f));
-	m_wheelMesh1->AttachToComponent(m_tankRootMesh, rules, TEXT("socket1"));
 
-	m_wheelMesh2->RelativeLocation = FVector(0.0f, 0.0f, -50.0f);
-	//m_wheelMesh2->RelativeRotation = FRotator(0.0f, 0.0f, -90.0f);
-	m_wheelMesh2->SetWorldScale3D(FVector(1.0f, 0.5f, 1.0f));
-	m_wheelMesh2->AttachToComponent(m_tankRootMesh, rules, TEXT("socket2"));
+	//m_wheelMeshL0->RelativeLocation = FVector(0.0f, 0.0f, -50.0f);
+	////m_wheelMeshL0->RelativeRotation = FRotator(0.0f, 0.0f, -90.0f);
+	//m_wheelMeshL0->SetWorldScale3D(FVector(1.0f, 0.5f, 1.0f));
+	//m_wheelMeshL0->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL0"));
+	//
+	//m_wheelMeshL1->RelativeLocation = FVector(0.0f, 0.0f, -50.0f);
+	////m_wheelMeshL1->RelativeRotation = FRotator(0.0f, 0.0f, -90.0f);
+	//m_wheelMeshL1->SetWorldScale3D(FVector(1.0f, 0.5f, 1.0f));
+	//m_wheelMeshL1->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL1"));
+	//
+	//m_wheelMeshL2->RelativeLocation = FVector(0.0f, 0.0f, -50.0f);
+	////m_wheelMeshL2->RelativeRotation = FRotator(0.0f, 0.0f, -90.0f);
+	//m_wheelMeshL2->SetWorldScale3D(FVector(1.0f, 0.5f, 1.0f));
+	//m_wheelMeshL2->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL2"));
+	//
+	//m_wheelMeshL3->RelativeLocation = FVector(0.0f, 0.0f, -50.0f);
+	////m_wheelMeshL3->RelativeRotation = FRotator(0.0f, 0.0f, -90.0f);
+	//m_wheelMeshL3->SetWorldScale3D(FVector(1.0f, 0.5f, 1.0f));
+	//m_wheelMeshL3->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL3"));
+	//
+	//m_wheelMeshR0->RelativeLocation = FVector(0.0f, 0.0f, -50.0f);
+	////m_wheelMeshR0->RelativeRotation = FRotator(0.0f, 0.0f, -90.0f);
+	//m_wheelMeshR0->SetWorldScale3D(FVector(1.0f, 0.5f, 1.0f));
+	//m_wheelMeshR0->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR0"));
+	//
+	//m_wheelMeshR1->RelativeLocation = FVector(0.0f, 0.0f, -50.0f);
+	////m_wheelMeshR1->RelativeRotation = FRotator(0.0f, 0.0f, -90.0f);
+	//m_wheelMeshR1->SetWorldScale3D(FVector(1.0f, 0.5f, 1.0f));
+	//m_wheelMeshR1->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR1"));
+	//
+	//m_wheelMeshR2->RelativeLocation = FVector(0.0f, 0.0f, -50.0f);
+	////m_wheelMeshR2->RelativeRotation = FRotator(0.0f, 0.0f, -90.0f);
+	//m_wheelMeshR2->SetWorldScale3D(FVector(1.0f, 0.5f, 1.0f));
+	//m_wheelMeshR2->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR2"));
+	//
+	//m_wheelMeshR3->RelativeLocation = FVector(0.0f, 0.0f, -50.0f);
+	////m_wheelMeshR3->RelativeRotation = FRotator(0.0f, 0.0f, -90.0f);
+	//m_wheelMeshR3->SetWorldScale3D(FVector(1.0f, 0.5f, 1.0f));
+	//m_wheelMeshR3->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR3"));
 
-	m_wheelMesh3->RelativeLocation = FVector(0.0f, 0.0f, -50.0f);
-	//m_wheelMesh3->RelativeRotation = FRotator(0.0f, 0.0f, -90.0f);
-	m_wheelMesh3->SetWorldScale3D(FVector(1.0f, 0.5f, 1.0f));
-	m_wheelMesh3->AttachToComponent(m_tankRootMesh, rules, TEXT("socket3"));
-
+#pragma endregion
 
 	//m_turretRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Turret"));
 	m_barrelMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BarrelMesh"));
@@ -174,6 +343,8 @@ ADrivableTank::ADrivableTank()
 	m_speed = 300;
 
 	m_maxSpeed = 500;
+
+	m_torque = 300000;
 }
 
 // Called when the game starts or when spawned
@@ -269,17 +440,36 @@ void ADrivableTank::Accelerate(float AxisValue)
 
 	//m_acceleration = FMath::Clamp(AxisValue, -1.0f, 1.0f) * 1500000;
 
-	FQuat myActorQuat0 = m_wheelMesh0->GetComponentQuat();
-	m_wheelMesh0->AddTorqueInRadians(myActorQuat0.RotateVector(FVector(10000000 * AxisValue, 10000000 * AxisValue, 10000000 * AxisValue)), NAME_None, false);
+	for (int i = 0; i < m_wheelCount; i++)
+	{
+		FQuat myActorQuat = m_wheelMeshArray[i]->GetComponentQuat();
+		m_wheelMeshArray[i]->AddTorqueInRadians(myActorQuat.RotateVector(FVector(0, m_torque * AxisValue, 0)), NAME_None, false);
+	}
+	
+	/*
+	FQuat myActorQuatL0 = m_wheelMeshL0->GetComponentQuat();
+	m_wheelMeshL0->AddTorqueInRadians(myActorQuatL0.RotateVector(FVector(0, m_torque * AxisValue, 0)), NAME_None, false);
 
-	FQuat myActorQuat1 = m_wheelMesh1->GetComponentQuat();
-	m_wheelMesh1->AddTorqueInRadians(myActorQuat1.RotateVector(FVector(10000000 * AxisValue, 10000000 * AxisValue, 10000000 * AxisValue)), NAME_None, false);
+	FQuat myActorQuatL1 = m_wheelMeshL1->GetComponentQuat();
+	m_wheelMeshL1->AddTorqueInRadians(myActorQuatL1.RotateVector(FVector(0, m_torque * AxisValue, 0)), NAME_None, false);
 
-	FQuat myActorQuat2 = m_wheelMesh2->GetComponentQuat();
-	m_wheelMesh2->AddTorqueInRadians(myActorQuat2.RotateVector(FVector(10000000 * AxisValue, 10000000 * AxisValue, 10000000 * AxisValue)), NAME_None, false);
+	FQuat myActorQuatL2 = m_wheelMeshL2->GetComponentQuat();
+	m_wheelMeshL2->AddTorqueInRadians(myActorQuatL2.RotateVector(FVector(0, m_torque * AxisValue, 0)), NAME_None, false);
 
-	FQuat myActorQuat3 = m_wheelMesh3->GetComponentQuat();
-	m_wheelMesh3->AddTorqueInRadians(myActorQuat3.RotateVector(FVector(10000000 * AxisValue, 10000000 * AxisValue, 10000000 * AxisValue)), NAME_None, false);
+	FQuat myActorQuatL3 = m_wheelMeshL3->GetComponentQuat();
+	m_wheelMeshL3->AddTorqueInRadians(myActorQuatL3.RotateVector(FVector(0, m_torque * AxisValue, 0)), NAME_None, false);
+
+	FQuat myActorQuatR0 = m_wheelMeshR0->GetComponentQuat();
+	m_wheelMeshR0->AddTorqueInRadians(myActorQuatR0.RotateVector(FVector(0, m_torque * AxisValue, 0)), NAME_None, false);
+
+	FQuat myActorQuatR1 = m_wheelMeshR1->GetComponentQuat();
+	m_wheelMeshR1->AddTorqueInRadians(myActorQuatR1.RotateVector(FVector(0, m_torque * AxisValue, 0)), NAME_None, false);
+
+	FQuat myActorQuatR2 = m_wheelMeshR2->GetComponentQuat();
+	m_wheelMeshR2->AddTorqueInRadians(myActorQuatR2.RotateVector(FVector(0, m_torque * AxisValue, 0)), NAME_None, false);
+
+	FQuat myActorQuatR3 = m_wheelMeshR3->GetComponentQuat();
+	m_wheelMeshR3->AddTorqueInRadians(myActorQuatR3.RotateVector(FVector(0, m_torque * AxisValue, 0)), NAME_None, false);*/
 
 
 
