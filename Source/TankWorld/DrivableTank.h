@@ -57,6 +57,11 @@ private:
 	UPROPERTY(EditAnywhere)
 		TArray<UStaticMeshComponent*> m_wheelMeshArray;
 
+	UPROPERTY(EditAnyWhere)
+		UMaterial* m_wheelMat;
+	UPROPERTY(EditAnyWhere)
+		UMaterial* m_bodyMat;
+
 	int m_wheelCount = 8;
 
 	//UPROPERTY(EditAnyWhere)
@@ -116,6 +121,7 @@ private:
 	FVector CurrentVelocity;
 	float m_acceleration;
 	float m_torque;
+	float m_turnTorque;
 	float m_maxSpeed;
 	FRotator TurnAmount;
 

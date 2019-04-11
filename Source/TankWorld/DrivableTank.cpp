@@ -20,6 +20,9 @@ ADrivableTank::ADrivableTank()
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> cubeMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> cylinderMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cylinder.Shape_Cylinder'"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> sphereMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
+
+	static ConstructorHelpers::FObjectFinder<UMaterial> patchMat(TEXT("Material'/Game/StarterContent/Materials/M_ColorGrid_LowSpec.M_ColorGrid_LowSpec'"));
+	static ConstructorHelpers::FObjectFinder<UMaterial> goldMat(TEXT("Material'/Game/StarterContent/Materials/M_Metal_Gold.M_Metal_Gold'"));
 	//GetMesh()->Set
 	m_tankRootMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BodyMesh"));
 	m_tankRootMesh->SetupAttachment(m_root);
@@ -30,6 +33,13 @@ ADrivableTank::ADrivableTank()
 	{
 		m_tankRootMesh->SetStaticMesh(bodyMesh.Object);
 	}
+	if (goldMat.Succeeded())
+	{
+		m_bodyMat = goldMat.Object;
+		m_tankRootMesh->SetMaterial(0, m_bodyMat);
+	}
+
+	m_tankRootMesh->SetAllMassScale(3.0f);
 
 	m_tankRootMesh->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
 	m_tankRootMesh->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
@@ -72,6 +82,15 @@ ADrivableTank::ADrivableTank()
 		m_wheelMeshArray[i]->SetSimulatePhysics(true);
 	}
 
+	if (patchMat.Succeeded())
+	{
+		m_wheelMat = patchMat.Object;
+		for (int i = 0; i < m_wheelCount; i++)
+		{
+			m_wheelMeshArray[i]->SetMaterial(0, m_wheelMat);
+		}
+	}
+
 
 	m_constraintArray = TArray<UPhysicsConstraintComponent*>();
 
@@ -104,10 +123,15 @@ ADrivableTank::ADrivableTank()
 		m_constraintArray[i]->ComponentName2.ComponentName = "BodyMesh";
 		m_constraintArray[i]->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
 		m_constraintArray[i]->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-		m_constraintArray[i]->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+		m_constraintArray[i]->SetLinearZLimit(ELinearConstraintMotion::LCM_Limited, 3.0f);
 		m_constraintArray[i]->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
 		m_constraintArray[i]->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
 		m_constraintArray[i]->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
+		m_constraintArray[i]->ConstraintInstance.ProfileInstance.LinearLimit.bSoftConstraint = 1;
+		m_constraintArray[i]->ConstraintInstance.ProfileInstance.LinearLimit.Stiffness = 100.1f;
+		m_constraintArray[i]->ConstraintInstance.ProfileInstance.LinearLimit.Damping = 0.3;
+		m_constraintArray[i]->ConstraintInstance.ProfileInstance.LinearLimit.Restitution = 0.5f;
+		m_constraintArray[i]->ConstraintInstance.ProfileInstance.LinearLimit.ContactDistance = 5.0f;
 		m_constraintArray[i]->SetDisableCollision(true);
 	}
 
@@ -344,7 +368,9 @@ ADrivableTank::ADrivableTank()
 
 	m_maxSpeed = 500;
 
-	m_torque = 300000;
+	m_torque = 2000000;
+
+	m_turnTorque = 4000000;
 }
 
 // Called when the game starts or when spawned
@@ -442,8 +468,11 @@ void ADrivableTank::Accelerate(float AxisValue)
 
 	for (int i = 0; i < m_wheelCount; i++)
 	{
-		FQuat myActorQuat = m_wheelMeshArray[i]->GetComponentQuat();
-		m_wheelMeshArray[i]->AddTorqueInRadians(myActorQuat.RotateVector(FVector(0, m_torque * AxisValue, 0)), NAME_None, false);
+		if (m_wheelMeshArray[i]->GetPhysicsAngularVelocityInRadians().Size() < 20.0f)
+		{
+			FQuat myActorQuat = m_wheelMeshArray[i]->GetComponentQuat();
+			m_wheelMeshArray[i]->AddTorqueInRadians(myActorQuat.RotateVector(FVector(0, m_torque * AxisValue, 0)), NAME_None, false);
+		}
 	}
 	
 	/*
@@ -501,7 +530,7 @@ void ADrivableTank::TurnTank(float AxisValue)
 	//FRotator NewRotation = GetActorRotation();
 	//FRotator NewRotation2 = m_root->GetComponentRotation();
 	//FRotator NewRotation2 = FRotator(0,0,0);
-	FRotator NewRotation2 = FRotator(0,AxisValue,0);
+	//FRotator NewRotation2 = FRotator(0,AxisValue,0);
 	//NewRotation2.Yaw += AxisValue;
 	//TurnAmount = FRotator(0,0,0);
 	//TurnAmount.Yaw = AxisValue;
@@ -511,11 +540,80 @@ void ADrivableTank::TurnTank(float AxisValue)
 	//m_root->SetWorldRotation(NewRotation2);
 	
 	//m_root->SetRelativeRotation(NewRotation2);
-	m_tankRootMesh->AddLocalRotation(NewRotation2);
 	//m_root->AddLocalRotation(NewRotation2);
 	//AddActorLocalRotation(NewRotation2);
+
+
+	//FRotator NewRotation2 = FRotator(0, AxisValue, 0);
+	//m_tankRootMesh->AddLocalRotation(NewRotation2);
+
+	/*for (int i = 0; i < 4; i++)
+	{
+		if (m_wheelMeshArray[i]->GetPhysicsAngularVelocityInRadians().Size() < 10.0f)
+		{
+			FQuat myActorQuat = m_wheelMeshArray[i]->GetComponentQuat();
+			m_wheelMeshArray[i]->AddTorqueInRadians(myActorQuat.RotateVector(FVector(0, m_turnTorque * -AxisValue, 0)), NAME_None, false);
+		}
+		else if (m_wheelMeshArray[i]->GetPhysicsAngularVelocityInRadians().X < 0.0f && AxisValue > 0)
+		{
+			FQuat myActorQuat = m_wheelMeshArray[i]->GetComponentQuat();
+			m_wheelMeshArray[i]->AddTorqueInRadians(myActorQuat.RotateVector(FVector(0, m_turnTorque * -AxisValue, 0)), NAME_None, false);
+		}
+		else
+		{
+			continue;
+		}
+	}*/
+	float tankVel = m_tankRootMesh->GetComponentVelocity().Size();
+	UE_LOG(LogTemp, Warning, TEXT("Vel %f"), tankVel);
+	//Loop over 4 sets of 2 wheels 
+	for (int i = 4; i < 8; i++)
+	{
+		//if the wheels arent spinning fast enough then spin them
+		if (m_wheelMeshArray[i]->GetPhysicsAngularVelocityInRadians().Size() < 10.0f || tankVel > 200)
+		{
+			//Left Wheel
+			FQuat myActorQuat = m_wheelMeshArray[i]->GetComponentQuat();
+			m_wheelMeshArray[i]->AddTorqueInRadians(myActorQuat.RotateVector(FVector(0, m_turnTorque * AxisValue, 0)), NAME_None, false);
+
+			//Right Wheel
+			FQuat myActorQuat2 = m_wheelMeshArray[i - 4]->GetComponentQuat();
+			m_wheelMeshArray[i - 4]->AddTorqueInRadians(myActorQuat2.RotateVector(FVector(0, m_turnTorque * -AxisValue, 0)), NAME_None, false);
+		}
+
+		//else if (tankVel > 200)
+		//{
+		//	if (AxisValue < 0)
+		//	{
+		//		//Left Wheel spin backwards
+		//		FQuat myActorQuat = m_wheelMeshArray[i]->GetComponentQuat();
+		//		m_wheelMeshArray[i]->AddTorqueInRadians(myActorQuat.RotateVector(FVector(0, m_turnTorque * AxisValue, 0)), NAME_None, false);
+		//	}
+		//	else if (AxisValue > 0)
+		//	{
+		//		//Right Wheel spin backwards
+		//		FQuat myActorQuat = m_wheelMeshArray[i - 4]->GetComponentQuat();
+		//		m_wheelMeshArray[i - 4]->AddTorqueInRadians(myActorQuat.RotateVector(FVector(0, m_turnTorque * -AxisValue, 0)), NAME_None, false);
+		//	}
+		//}
+
+		////If A key is down and left wheel is spinning forward, slow it down
+		//else if (AxisValue < 0 && m_wheelMeshArray[i]->GetPhysicsAngularVelocityInRadians().X < 0.0f)
+		//{
+		//	FQuat myActorQuat = m_wheelMeshArray[i]->GetComponentQuat();
+		//	m_wheelMeshArray[i]->AddTorqueInRadians(myActorQuat.RotateVector(FVector(0, m_turnTorque * 3 * AxisValue, 0)), NAME_None, false);
+		//}
+		////If D key is down and right wheel is spinning forward, slow it down
+		//else if(AxisValue > 0 && m_wheelMeshArray[i - 4]->GetPhysicsAngularVelocityInRadians().X < 0.0f)
+		//{
+		//	FQuat myActorQuat = m_wheelMeshArray[i - 4]->GetComponentQuat();
+		//	m_wheelMeshArray[i - 4]->AddTorqueInRadians(myActorQuat.RotateVector(FVector(0, m_turnTorque * 3 * -AxisValue, 0)), NAME_None, false);
+		//}
+
+	}
 }
-//
+
+
 //void ADrivableTank::TurnTankR()
 //{
 //	UE_LOG(LogTemp, Warning, TEXT("Your messageRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR"));
@@ -535,12 +633,15 @@ void ADrivableTank::TurnTurretX(float AxisValue)
 	//FRotator NewRotation = GetActorRotation();
 	
 	//FRotator NewRotation = m_turretMesh->GetComponentRotation();
-	FRotator NewRotation = FRotator(0, AxisValue, 0);
+	//FRotator NewRotation = FRotator(0, AxisValue, 0);
 	//NewRotation.Yaw += AxisValue;
 	//SetActorRotation(NewRotation);
 	//m_turretMesh->SetRelativeRotation(NewRotation);
-	m_turretMesh->AddLocalRotation(NewRotation);
+	//m_turretMesh->AddLocalRotation(NewRotation);
 	//m_turretRoot->GetComponentTransform().SetRotation(NewRotation);
+
+	FRotator NewRotation = FRotator(0, AxisValue, 0);
+	m_turretMesh->AddLocalRotation(NewRotation);
 }
 
 // Called to bind functionality to input
