@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
+#include "PhysicsEngine/PhysicsConstraintComponent.h"
 
 #include "TreadSpline.generated.h"
 
@@ -40,12 +41,16 @@ private:
 		TArray<USplineMeshComponent*> m_splineMeshes;
 
 	UPROPERTY(EditAnywhere)
+		TArray<UPhysicsConstraintComponent*>  m_splineConstraints;
+
+	UPROPERTY(EditAnywhere)
 		UStaticMesh* m_staticMesh;
 	
 	UPROPERTY(EditAnywhere)
 		UMaterial* m_splineMeshMaterial;
 
 	int m_sectionLength;
+
 	
 	
 	

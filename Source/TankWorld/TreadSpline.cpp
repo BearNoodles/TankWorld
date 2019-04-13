@@ -19,6 +19,7 @@ ATreadSpline::ATreadSpline()
 	m_spline->SetupAttachment(RootComponent);
 
 	m_splineMeshes = TArray<USplineMeshComponent*>();
+	m_splineConstraints = TArray<UPhysicsConstraintComponent*>();
 	//m_splineMeshes->SetupAttachment(RootComponent);
 
 	//m_root = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Root"));
@@ -43,13 +44,27 @@ ATreadSpline::ATreadSpline()
 	}
 
 	m_sectionLength = 40;
+
+	FAttachmentTransformRules rules = FAttachmentTransformRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, false);
+
 }
 
 void ATreadSpline::OnConstruction(const FTransform& Transform)
 {
 
-	
-	for (int i = 0; i < m_spline->GetNumberOfSplinePoints() - 1; i++)
+	FAttachmentTransformRules rules = FAttachmentTransformRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, false);
+
+	for (int i = 0; i < m_splineConstraints.Num(); i++)
+	{
+		m_splineConstraints[i]->DestroyComponent();
+	}
+	for (int i = 0; i < m_splineMeshes.Num(); i++)
+	{
+		m_splineMeshes[i]->DestroyComponent();
+	}
+	m_splineConstraints.Empty();
+	m_splineMeshes.Empty();
+	//for (int i = 0; i < m_spline->GetNumberOfSplinePoints() - 1; i++)
 	for (int i = 0; i < (int)(m_spline->GetSplineLength() / m_sectionLength); i++)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"));
@@ -64,6 +79,38 @@ void ATreadSpline::OnConstruction(const FTransform& Transform)
 		m_splineMeshes.Last()->SetMaterial(0, m_splineMeshMaterial);
 
 		m_splineMeshes.Last()->SetForwardAxis(ESplineMeshAxis::X);
+
+		if (m_splineConstraints.Num() > 0)
+		{
+			//attach to last constraint
+		
+			m_splineConstraints[m_splineConstraints.Num() - 1]->OverrideComponent2 = m_splineMeshes.Top();
+		}
+
+
+		//m_splineConstraints.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("Constraint ")));
+		m_splineConstraints.Add(NewObject<UPhysicsConstraintComponent>(this, UPhysicsConstraintComponent::StaticClass()));
+		m_splineConstraints.Top()->OverrideComponent1 = m_splineMeshes.Top();
+
+		m_splineConstraints.Top()->SetRelativeLocation(FVector(20.0f, 0.0f, 0.0f));
+	
+	
+		//m_splineConstraints[i]->ComponentName2.ComponentName = "BodyMesh";
+		m_splineConstraints.Top()->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+		m_splineConstraints.Top()->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+		m_splineConstraints.Top()->SetLinearZLimit(ELinearConstraintMotion::LCM_Limited, 3.0f);
+		m_splineConstraints.Top()->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Free, 45);
+		m_splineConstraints.Top()->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Free, 45);
+		m_splineConstraints.Top()->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
+		m_splineConstraints.Top()->ConstraintInstance.ProfileInstance.LinearLimit.bSoftConstraint = 1;
+		m_splineConstraints.Top()->ConstraintInstance.ProfileInstance.LinearLimit.Stiffness = 100.1f;
+		m_splineConstraints.Top()->ConstraintInstance.ProfileInstance.LinearLimit.Damping = 0.3;
+		m_splineConstraints.Top()->ConstraintInstance.ProfileInstance.LinearLimit.Restitution = 0.5f;
+		m_splineConstraints.Top()->ConstraintInstance.ProfileInstance.LinearLimit.ContactDistance = 5.0f;
+		m_splineConstraints.Top()->SetDisableCollision(true);
+	
+
+		m_splineConstraints.Top()->AttachToComponent(m_splineMeshes.Top(), rules, TEXT("FrontSocket"));
 
 		m_splineMeshes.Last()->CreationMethod = EComponentCreationMethod::UserConstructionScript;
 		m_splineMeshes.Last()->SetMobility(EComponentMobility::Movable);
