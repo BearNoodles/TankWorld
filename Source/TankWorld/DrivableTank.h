@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "TreadSpline.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
@@ -28,6 +29,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent);
 
+
 private:
 
 	UPROPERTY(EditAnywhere)
@@ -36,6 +38,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* m_tankRootMesh;
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class ATreadSpline> treadBP;
 
 	//UPROPERTY(EditAnywhere)
 	//	UStaticMeshComponent* m_wheelMeshL0;
@@ -107,6 +112,8 @@ private:
 
 	void Accelerate(float AxisValue);
 	void TurnTank(float AxisValue);
+
+	void CreateTreads();
 
 	/*void StartAccelerate();
 	void StartTurnTankL();

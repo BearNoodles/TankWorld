@@ -4,6 +4,7 @@
 #include "ConstructorHelpers.h"
 #include "GameFramework/PlayerController.h"
 #include "Components/StaticMeshComponent.h"
+#include "Engine/World.h"
 #include "TankPawnMovementComponent.h"
 
 
@@ -371,6 +372,10 @@ ADrivableTank::ADrivableTank()
 	m_torque = 2000000;
 
 	m_turnTorque = 4000000;
+
+	static ConstructorHelpers::FObjectFinder<UClass> treadFinder(TEXT("Blueprint'/Game/BluePrints/TreadSplineBP.TreadSplineBP_C'"));
+	treadBP = treadFinder.Object;
+	//CreateTreads();
 }
 
 // Called when the game starts or when spawned
@@ -378,6 +383,8 @@ void ADrivableTank::BeginPlay()
 {
 	Super::BeginPlay();
 	UE_LOG(LogTemp, Warning, TEXT("Your message111111111111111111111111111"));
+
+	CreateTreads();
 }
 
 // Called every frame
@@ -565,7 +572,7 @@ void ADrivableTank::TurnTank(float AxisValue)
 		}
 	}*/
 	float tankVel = m_tankRootMesh->GetComponentVelocity().Size();
-	UE_LOG(LogTemp, Warning, TEXT("Vel %f"), tankVel);
+	//UE_LOG(LogTemp, Warning, TEXT("Vel %f"), tankVel);
 	//Loop over 4 sets of 2 wheels 
 	for (int i = 4; i < 8; i++)
 	{
@@ -642,6 +649,25 @@ void ADrivableTank::TurnTurretX(float AxisValue)
 
 	FRotator NewRotation = FRotator(0, AxisValue, 0);
 	m_turretMesh->AddLocalRotation(NewRotation);
+}
+
+void ADrivableTank::CreateTreads()
+{
+	if (treadBP)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Your messageRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR"));
+		UWorld* world = GetWorld();
+		if (world)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Your messageRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR"));
+			FActorSpawnParameters spawnParams;
+			spawnParams.Owner = this;
+
+			FRotator rotation;
+			FVector spawnLocation = FVector(0, 0, 0);
+			world->SpawnActor<ATreadSpline>(treadBP, spawnLocation, rotation, spawnParams);
+		}
+	}
 }
 
 // Called to bind functionality to input

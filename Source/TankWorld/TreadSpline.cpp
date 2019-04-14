@@ -80,28 +80,30 @@ void ATreadSpline::OnConstruction(const FTransform& Transform)
 
 		m_splineMeshes.Last()->SetForwardAxis(ESplineMeshAxis::X);
 
-		if (m_splineConstraints.Num() > 0)
+		if (m_splineMeshes.Num() > 1)
 		{
-			//attach to last constraint
+			//attach to last constraintm_splineMeshes[m_splineMeshes[]]
 		
-			m_splineConstraints[m_splineConstraints.Num() - 1]->OverrideComponent2 = m_splineMeshes.Top();
+			//m_splineConstraints[m_splineConstraints.Num() - 1]->OverrideComponent2 = m_splineMeshes.Top();
+			m_splineConstraints.Top()->SetConstrainedComponents(m_splineMeshes[m_splineMeshes.Num() - 2], NAME_None, m_splineMeshes.Top(), NAME_None);
 		}
 
-
+		
 		//m_splineConstraints.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("Constraint ")));
+		//UPROPERTY(EditAnywhere)
 		m_splineConstraints.Add(NewObject<UPhysicsConstraintComponent>(this, UPhysicsConstraintComponent::StaticClass()));
-		m_splineConstraints.Top()->OverrideComponent1 = m_splineMeshes.Top();
+		//m_splineConstraints.Top()->OverrideComponent1 = m_splineMeshes.Top();
 
-		m_splineConstraints.Top()->SetRelativeLocation(FVector(20.0f, 0.0f, 0.0f));
+		//m_splineConstraints.Top()->SetRelativeLocation(FVector(10.0f, 0.0f, 0.0f));
 	
 	
 		//m_splineConstraints[i]->ComponentName2.ComponentName = "BodyMesh";
 		m_splineConstraints.Top()->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
 		m_splineConstraints.Top()->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
 		m_splineConstraints.Top()->SetLinearZLimit(ELinearConstraintMotion::LCM_Limited, 3.0f);
-		m_splineConstraints.Top()->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Free, 45);
-		m_splineConstraints.Top()->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Free, 45);
-		m_splineConstraints.Top()->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
+		m_splineConstraints.Top()->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
+		m_splineConstraints.Top()->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
+		m_splineConstraints.Top()->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Limited, 90);
 		m_splineConstraints.Top()->ConstraintInstance.ProfileInstance.LinearLimit.bSoftConstraint = 1;
 		m_splineConstraints.Top()->ConstraintInstance.ProfileInstance.LinearLimit.Stiffness = 100.1f;
 		m_splineConstraints.Top()->ConstraintInstance.ProfileInstance.LinearLimit.Damping = 0.3;
@@ -185,7 +187,13 @@ void ATreadSpline::OnConstruction(const FTransform& Transform)
 		//SplineMesh->SetStartAndEnd(pointLocationStart, pointTangentStart, pointLocationEnd, pointTangentEnd);
 	
 	}
-	
+	if (m_splineMeshes.Num() > 1 && m_splineConstraints.Num() > 0)
+	{
+		//attach to last mesh to first
+
+		//m_splineConstraints[m_splineConstraints.Num() - 1]->OverrideComponent2 = m_splineMeshes.Top();
+		m_splineConstraints.Top()->SetConstrainedComponents(m_splineMeshes.Top(), NAME_None, m_splineMeshes[0], NAME_None);
+	}
 	RegisterAllComponents();
 }
 
