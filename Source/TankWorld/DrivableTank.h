@@ -37,7 +37,10 @@ private:
 		//UStaticMeshComponent* m_root;
 
 	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* m_tankRootMesh;
+		UStaticMeshComponent* m_tankRootMesh; 
+	
+	UPROPERTY(EditAnywhere)
+		UStaticMesh* m_treadMesh;
 
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class ATreadSpline> treadBP;
@@ -62,32 +65,42 @@ private:
 	UPROPERTY(EditAnywhere)
 		TArray<UStaticMeshComponent*> m_wheelMeshArray;
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnywhere)
+		UStaticMeshComponent* meshTest;
+
+	UPROPERTY(EditAnywhere)
+		TArray<UStaticMeshComponent*> treadMeshes0;
+	UPROPERTY(EditAnywhere)
+		TArray<UStaticMeshComponent*> treadMeshes1;
+	UPROPERTY(EditAnywhere)
+		TArray<UStaticMeshComponent*> treadMeshes2;
+	UPROPERTY(EditAnywhere)
+		TArray<UStaticMeshComponent*> treadMeshes3;
+	UPROPERTY(EditAnywhere)
+		TArray<UStaticMeshComponent*> treadMeshes4;
+	UPROPERTY(EditAnywhere)
+		TArray<UStaticMeshComponent*> treadMeshes5;
+	UPROPERTY(EditAnywhere)
+		TArray<UStaticMeshComponent*> treadMeshes6;
+	UPROPERTY(EditAnywhere)
+		TArray<UStaticMeshComponent*> treadMeshes7;
+
+	UPROPERTY(EditAnywhere)
 		UMaterial* m_wheelMat;
+
+	UPROPERTY(EditAnyWhere)
+		UMaterial* m_treadMat;
 	UPROPERTY(EditAnyWhere)
 		UMaterial* m_bodyMat;
 
 	int m_wheelCount = 8;
 
-	//UPROPERTY(EditAnyWhere)
-	//	UPhysicsConstraintComponent* m_constraintL0;
-	//UPROPERTY(EditAnyWhere)
-	//	UPhysicsConstraintComponent* m_constraintL1;
-	//UPROPERTY(EditAnyWhere)
-	//	UPhysicsConstraintComponent* m_constraintL2;
-	//UPROPERTY(EditAnyWhere)
-	//	UPhysicsConstraintComponent* m_constraintL3;
-	//UPROPERTY(EditAnyWhere)
-	//	UPhysicsConstraintComponent* m_constraintR0;
-	//UPROPERTY(EditAnyWhere)
-	//	UPhysicsConstraintComponent* m_constraintR1;
-	//UPROPERTY(EditAnyWhere)
-	//	UPhysicsConstraintComponent* m_constraintR2;
-	//UPROPERTY(EditAnyWhere)
-	//	UPhysicsConstraintComponent* m_constraintR3;
+
+	FVector m_treadPosition;
+	FRotator m_treadRotation;
 
 	UPROPERTY(EditAnywhere)
-		TArray<UPhysicsConstraintComponent*> m_constraintArray;
+		TArray<UPhysicsConstraintComponent*> m_wheelConstraintArray;
 
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* m_turretMesh;
@@ -110,10 +123,14 @@ private:
 	float m_ammoTimer;
 	float m_regenRate;
 
+	int m_socketGap = 80;
+
 	void Accelerate(float AxisValue);
 	void TurnTank(float AxisValue);
 
-	void CreateTreads();
+	void SetupTreads(int i);
+
+	void UpdateTreads();
 
 	/*void StartAccelerate();
 	void StartTurnTankL();

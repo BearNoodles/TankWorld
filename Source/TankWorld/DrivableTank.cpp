@@ -18,6 +18,7 @@ ADrivableTank::ADrivableTank()
 	PrimaryActorTick.bCanEverTick = true;
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> bodyMesh(TEXT("StaticMesh'/Game/StaticMeshes/Body2.Body2'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> treadMesh(TEXT("StaticMesh'/Game/StaticMeshes/Tread2.Tread2'"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> cubeMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> cylinderMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cylinder.Shape_Cylinder'"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> sphereMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
@@ -48,6 +49,7 @@ ADrivableTank::ADrivableTank()
 
 
 	FAttachmentTransformRules rules = FAttachmentTransformRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false);
+	FAttachmentTransformRules rules2 = FAttachmentTransformRules(EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false);
 
 	m_wheelMeshArray = TArray<UStaticMeshComponent*>();
 	m_wheelMeshArray.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshL0")));
@@ -59,24 +61,12 @@ ADrivableTank::ADrivableTank()
 	m_wheelMeshArray.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshR2")));
 	m_wheelMeshArray.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshR3")));
 
+	if (treadMesh.Succeeded())
+	{
+		m_treadMesh = treadMesh.Object;
+		
+	}
 
-	/*m_wheelMeshL0 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshL0"));
-	m_wheelMeshL1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshL1"));
-	m_wheelMeshL2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshL2"));
-	m_wheelMeshL3 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshL3"));
-	m_wheelMeshR0 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshR0"));
-	m_wheelMeshR1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshR1"));
-	m_wheelMeshR2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshR2"));
-	m_wheelMeshR3 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMeshR3"));*/
-
-	//m_wheelMeshL0->SetSimulatePhysics(true);
-	//m_wheelMeshL1->SetSimulatePhysics(true);
-	//m_wheelMeshL2->SetSimulatePhysics(true);
-	//m_wheelMeshL3->SetSimulatePhysics(true);
-	//m_wheelMeshR0->SetSimulatePhysics(true);
-	//m_wheelMeshR1->SetSimulatePhysics(true);
-	//m_wheelMeshR2->SetSimulatePhysics(true);
-	//m_wheelMeshR3->SetSimulatePhysics(true);
 
 	for (int i = 0; i < m_wheelCount; i++)
 	{
@@ -93,57 +83,57 @@ ADrivableTank::ADrivableTank()
 	}
 
 
-	m_constraintArray = TArray<UPhysicsConstraintComponent*>();
+	m_wheelConstraintArray = TArray<UPhysicsConstraintComponent*>();
 
-	m_constraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintL0")));
-	m_constraintArray[0]->ComponentName1.ComponentName = "WheelMeshL0";
+	m_wheelConstraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintL0")));
+	m_wheelConstraintArray[0]->ComponentName1.ComponentName = "WheelMeshL0";
 
-	m_constraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintL1")));
-	m_constraintArray[1]->ComponentName1.ComponentName = "WheelMeshL1";
+	m_wheelConstraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintL1")));
+	m_wheelConstraintArray[1]->ComponentName1.ComponentName = "WheelMeshL1";
 
-	m_constraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintL2")));
-	m_constraintArray[2]->ComponentName1.ComponentName = "WheelMeshL2";
+	m_wheelConstraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintL2")));
+	m_wheelConstraintArray[2]->ComponentName1.ComponentName = "WheelMeshL2";
 
-	m_constraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintL3")));
-	m_constraintArray[3]->ComponentName1.ComponentName = "WheelMeshL3";
+	m_wheelConstraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintL3")));
+	m_wheelConstraintArray[3]->ComponentName1.ComponentName = "WheelMeshL3";
 
-	m_constraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintR0")));
-	m_constraintArray[4]->ComponentName1.ComponentName = "WheelMeshR0";
+	m_wheelConstraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintR0")));
+	m_wheelConstraintArray[4]->ComponentName1.ComponentName = "WheelMeshR0";
 
-	m_constraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintR1")));
-	m_constraintArray[5]->ComponentName1.ComponentName = "WheelMeshR1";
+	m_wheelConstraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintR1")));
+	m_wheelConstraintArray[5]->ComponentName1.ComponentName = "WheelMeshR1";
 
-	m_constraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintR2")));
-	m_constraintArray[6]->ComponentName1.ComponentName = "WheelMeshR2";
+	m_wheelConstraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintR2")));
+	m_wheelConstraintArray[6]->ComponentName1.ComponentName = "WheelMeshR2";
 
-	m_constraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintR3")));
-	m_constraintArray[7]->ComponentName1.ComponentName = "WheelMeshR3";
+	m_wheelConstraintArray.Add(CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintR3")));
+	m_wheelConstraintArray[7]->ComponentName1.ComponentName = "WheelMeshR3";
 
 	for (int i = 0; i < m_wheelCount; i++)
 	{
-		m_constraintArray[i]->ComponentName2.ComponentName = "BodyMesh";
-		m_constraintArray[i]->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-		m_constraintArray[i]->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-		m_constraintArray[i]->SetLinearZLimit(ELinearConstraintMotion::LCM_Limited, 3.0f);
-		m_constraintArray[i]->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
-		m_constraintArray[i]->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
-		m_constraintArray[i]->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
-		m_constraintArray[i]->ConstraintInstance.ProfileInstance.LinearLimit.bSoftConstraint = 1;
-		m_constraintArray[i]->ConstraintInstance.ProfileInstance.LinearLimit.Stiffness = 100.1f;
-		m_constraintArray[i]->ConstraintInstance.ProfileInstance.LinearLimit.Damping = 0.3;
-		m_constraintArray[i]->ConstraintInstance.ProfileInstance.LinearLimit.Restitution = 0.5f;
-		m_constraintArray[i]->ConstraintInstance.ProfileInstance.LinearLimit.ContactDistance = 5.0f;
-		m_constraintArray[i]->SetDisableCollision(true);
+		m_wheelConstraintArray[i]->ComponentName2.ComponentName = "BodyMesh";
+		m_wheelConstraintArray[i]->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+		m_wheelConstraintArray[i]->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
+		m_wheelConstraintArray[i]->SetLinearZLimit(ELinearConstraintMotion::LCM_Limited, 3.0f);
+		m_wheelConstraintArray[i]->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
+		m_wheelConstraintArray[i]->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
+		m_wheelConstraintArray[i]->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
+		m_wheelConstraintArray[i]->ConstraintInstance.ProfileInstance.LinearLimit.bSoftConstraint = 1;
+		m_wheelConstraintArray[i]->ConstraintInstance.ProfileInstance.LinearLimit.Stiffness = 100.1f;
+		m_wheelConstraintArray[i]->ConstraintInstance.ProfileInstance.LinearLimit.Damping = 0.3;
+		m_wheelConstraintArray[i]->ConstraintInstance.ProfileInstance.LinearLimit.Restitution = 0.5f;
+		m_wheelConstraintArray[i]->ConstraintInstance.ProfileInstance.LinearLimit.ContactDistance = 5.0f;
+		m_wheelConstraintArray[i]->SetDisableCollision(true);
 	}
 
-	m_constraintArray[0]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL0"));
-	m_constraintArray[1]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL1"));
-	m_constraintArray[2]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL2"));
-	m_constraintArray[3]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL3"));
-	m_constraintArray[4]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR0"));
-	m_constraintArray[5]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR1"));
-	m_constraintArray[6]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR2"));
-	m_constraintArray[7]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR3"));
+	m_wheelConstraintArray[0]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL0"));
+	m_wheelConstraintArray[1]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL1"));
+	m_wheelConstraintArray[2]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL2"));
+	m_wheelConstraintArray[3]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL3"));
+	m_wheelConstraintArray[4]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR0"));
+	m_wheelConstraintArray[5]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR1"));
+	m_wheelConstraintArray[6]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR2"));
+	m_wheelConstraintArray[7]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR3"));
 
 #pragma region MyRegion
 
@@ -245,22 +235,12 @@ ADrivableTank::ADrivableTank()
 	//m_constraintR3->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR3"));
 
 #pragma endregion
-	//m_turretRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Turret"));
 	m_turretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TurretMesh"));
-	//m_turretMesh->SetupAttachment(m_tankRootMesh);
 	m_turretMesh->SetupAttachment(m_tankRootMesh);
 
 	if (sphereMesh.Succeeded())
 	{
 		m_turretMesh->SetStaticMesh(sphereMesh.Object);
-		//m_wheelMeshL0->SetStaticMesh(sphereMesh.Object);
-		//m_wheelMeshL1->SetStaticMesh(sphereMesh.Object);
-		//m_wheelMeshL2->SetStaticMesh(sphereMesh.Object);
-		//m_wheelMeshL3->SetStaticMesh(sphereMesh.Object);
-		//m_wheelMeshR0->SetStaticMesh(sphereMesh.Object);
-		//m_wheelMeshR1->SetStaticMesh(sphereMesh.Object);
-		//m_wheelMeshR2->SetStaticMesh(sphereMesh.Object);
-		//m_wheelMeshR3->SetStaticMesh(sphereMesh.Object);
 		for (int i = 0; i < m_wheelCount; i++)
 		{
 			m_wheelMeshArray[i]->SetStaticMesh(sphereMesh.Object);
@@ -275,7 +255,7 @@ ADrivableTank::ADrivableTank()
 	{
 		m_wheelMeshArray[i]->RelativeLocation = FVector(0.0f, 0.0f, -50.0f);
 		//m_wheelMeshArray[i]->RelativeRotation = FRotator(0.0f, 0.0f, -90.0f);
-		m_wheelMeshArray[i]->SetWorldScale3D(FVector(1.0f, 0.5f, 1.0f));
+		m_wheelMeshArray[i]->SetRelativeScale3D(FVector(1.0f, 0.5f, 1.0f));
 	}
 	m_wheelMeshArray[0]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL0"));
 	m_wheelMeshArray[1]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL1"));
@@ -286,6 +266,39 @@ ADrivableTank::ADrivableTank()
 	m_wheelMeshArray[6]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR2"));
 	m_wheelMeshArray[7]->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR3"));
 
+
+	treadMeshes0 = TArray<UStaticMeshComponent*>();
+	treadMeshes1 = TArray<UStaticMeshComponent*>();
+	treadMeshes2 = TArray<UStaticMeshComponent*>();
+	treadMeshes3 = TArray<UStaticMeshComponent*>();
+	treadMeshes4 = TArray<UStaticMeshComponent*>();
+	treadMeshes5 = TArray<UStaticMeshComponent*>();
+	treadMeshes6 = TArray<UStaticMeshComponent*>();
+	treadMeshes7 = TArray<UStaticMeshComponent*>();
+
+	for (int i = 0; i < 8; i++)
+	{
+		FName name = *FString::Printf(TEXT("Baesh0%i"),i);
+		treadMeshes0.Add(CreateDefaultSubobject<UStaticMeshComponent>(name));
+		name = *FString::Printf(TEXT("Baesh1%i"), i);
+		treadMeshes1.Add(CreateDefaultSubobject<UStaticMeshComponent>(name));
+		name = *FString::Printf(TEXT("Baesh2%i"), i);
+		treadMeshes2.Add(CreateDefaultSubobject<UStaticMeshComponent>(name));
+		name = *FString::Printf(TEXT("Baesh3%i"), i);
+		treadMeshes3.Add(CreateDefaultSubobject<UStaticMeshComponent>(name));
+		name = *FString::Printf(TEXT("Baesh4%i"), i);
+		treadMeshes4.Add(CreateDefaultSubobject<UStaticMeshComponent>(name));
+		name = *FString::Printf(TEXT("Baesh5%i"), i);
+		treadMeshes5.Add(CreateDefaultSubobject<UStaticMeshComponent>(name));
+		name = *FString::Printf(TEXT("Baesh6%i"), i);
+		treadMeshes6.Add(CreateDefaultSubobject<UStaticMeshComponent>(name));
+		name = *FString::Printf(TEXT("Baesh7%i"), i);
+		treadMeshes7.Add(CreateDefaultSubobject<UStaticMeshComponent>(name)); 
+		
+		SetupTreads(i);
+	}
+	//meshTest = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelMe"));
+	//meshTest->SetStaticMesh(m_treadMesh);
 #pragma region MyRegion
 
 
@@ -330,6 +343,10 @@ ADrivableTank::ADrivableTank()
 	//m_wheelMeshR3->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR3"));
 
 #pragma endregion
+	//meshTest->AttachToComponent(m_wheelMeshArray[0], rules2, NAME_None);
+
+
+
 
 	//m_turretRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Turret"));
 	m_barrelMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BarrelMesh"));
@@ -338,7 +355,12 @@ ADrivableTank::ADrivableTank()
 
 	if (cylinderMesh.Succeeded())
 	{
-		m_barrelMesh->SetStaticMesh(cylinderMesh.Object);
+		m_barrelMesh->SetStaticMesh(cylinderMesh.Object); 
+		
+		//for (int i = 0; i < m_wheelCount; i++)
+		//{
+		//	m_wheelMeshArray[i]->SetStaticMesh(cylinderMesh.Object);
+		//}
 	}
 
 
@@ -374,17 +396,16 @@ ADrivableTank::ADrivableTank()
 	m_turnTorque = 4000000;
 
 	static ConstructorHelpers::FObjectFinder<UClass> treadFinder(TEXT("Blueprint'/Game/BluePrints/TreadSplineBP.TreadSplineBP_C'"));
-	treadBP = treadFinder.Object;
 	//CreateTreads();
 }
+
+
 
 // Called when the game starts or when spawned
 void ADrivableTank::BeginPlay()
 {
 	Super::BeginPlay();
 	UE_LOG(LogTemp, Warning, TEXT("Your message111111111111111111111111111"));
-
-	CreateTreads();
 }
 
 // Called every frame
@@ -403,44 +424,8 @@ void ADrivableTank::Tick(float DeltaTime)
 		}
 	}
 
-	/*if (isAccelerating)
-	{
-		Accelerate();
-	}
-	else
-	{
-		StopAccelerate();
-	}
-	if (isTurningLeft)
-	{
-		TurnTankL();
-	}
-	else
-	{
-		StopTurnTankL();
-	}
-	if (isTurningRight)
-	{
-		TurnTankR();
-	}
-	else
-	{
-		StopTurnTankR();
-	}*/
+	UpdateTreads();
 
-	//if (WasInputKeyJustPressed(EKeys::LeftMouseButton))
-	{
-
-	}
-	//CurrentVelocity += m_acceleration * m_tankRootMesh->GetForwardVector();
-	//if(!CurrentVelocity.IsZero())
-	//{
-	//	AddActorLocalOffset(CurrentVelocity * DeltaTime);
-	//}
-
-	//m_tankRootMesh->AddForce(FVector(0.0f, 0.0f, -9.8f));
-	//m_tankRootMesh->SetPhysicsLinearVelocity(m_tankRootMesh->GetComponentVelocity().Size() * m_tankRootMesh->GetForwardVector());
-	//m_root->AddForce(m_acceleration);
 	if (m_tankRootMesh->GetComponentVelocity().Size() < m_maxSpeed)
 	{
 
@@ -452,8 +437,6 @@ void ADrivableTank::Tick(float DeltaTime)
 		//UE_LOG(LogTemp, Warning, TEXT("Your messageSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"));
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("Turning"));
-	//AddActorLocalRotation(TurnAmount * DeltaTime);
 	SetActorRelativeRotation(TurnAmount * DeltaTime * 100);
 
 	TurnAmount.Yaw = 0;
@@ -461,17 +444,22 @@ void ADrivableTank::Tick(float DeltaTime)
 
 }
 
+void ADrivableTank::UpdateTreads()
+{
+	for (int i = 0; i < 8; i++)
+	{
+		
+		//UE_LOG(LogTemp, Warning, TEXT("Vel %f"), (m_tankRootMesh->GetComponentLocation().X - m_wheelMeshArray[0]->GetComponentLocation().X));
+		UE_LOG(LogTemp, Warning, TEXT("Vel %f"), (m_tankRootMesh->GetComponentLocation().Z - m_wheelMeshArray[0]->GetComponentLocation().Z));
+		//treadMeshes0[i]->AddLocalOffset(FVector(0, 0, m_wheelMeshArray[0]->RelativeLocation.Z));
+		//treadMeshes0[i]->SetRelativeLocationAndRotation(FVector(treadMeshes0[i]->GetComponentLocation().X, treadMeshes0[i]->GetComponentLocation().Y, 
+			//treadMeshes0[i]->GetComponentLocation().Z), FRotator(0, 0, 0));// +
+			//(m_tankRootMesh->GetComponentLocation().Z - m_wheelMeshArray[0]->GetComponentLocation().Z)), FRotator(0,0,0));
+	}
+}
+
 void ADrivableTank::Accelerate(float AxisValue)
 {
-	// Move at 100 units per second right or left
-	//m_tankRootMesh->AddForce(m_tankRootMesh->GetForwardVector() * 1000000);
-	//CurrentVelocity = FMath::Clamp(AxisValue, -1.0f, 1.0f) * m_speed * m_tankRootMesh->GetForwardVector();
-	//CurrentVelocity = FMath::Clamp(AxisValue, -1.0f, 1.0f) * m_speed * m_tankRootMesh->GetForwardVector();
-	//m_acceleration = FMath::Clamp(AxisValue, -1.0f, 1.0f) * 15000;
-	//m_acceleration = FMath::Clamp(AxisValue, -1.0f, 1.0f) * m_root->GetForwardVector() * 2500000;
-
-
-	//m_acceleration = FMath::Clamp(AxisValue, -1.0f, 1.0f) * 1500000;
 
 	for (int i = 0; i < m_wheelCount; i++)
 	{
@@ -482,95 +470,11 @@ void ADrivableTank::Accelerate(float AxisValue)
 		}
 	}
 	
-	/*
-	FQuat myActorQuatL0 = m_wheelMeshL0->GetComponentQuat();
-	m_wheelMeshL0->AddTorqueInRadians(myActorQuatL0.RotateVector(FVector(0, m_torque * AxisValue, 0)), NAME_None, false);
-
-	FQuat myActorQuatL1 = m_wheelMeshL1->GetComponentQuat();
-	m_wheelMeshL1->AddTorqueInRadians(myActorQuatL1.RotateVector(FVector(0, m_torque * AxisValue, 0)), NAME_None, false);
-
-	FQuat myActorQuatL2 = m_wheelMeshL2->GetComponentQuat();
-	m_wheelMeshL2->AddTorqueInRadians(myActorQuatL2.RotateVector(FVector(0, m_torque * AxisValue, 0)), NAME_None, false);
-
-	FQuat myActorQuatL3 = m_wheelMeshL3->GetComponentQuat();
-	m_wheelMeshL3->AddTorqueInRadians(myActorQuatL3.RotateVector(FVector(0, m_torque * AxisValue, 0)), NAME_None, false);
-
-	FQuat myActorQuatR0 = m_wheelMeshR0->GetComponentQuat();
-	m_wheelMeshR0->AddTorqueInRadians(myActorQuatR0.RotateVector(FVector(0, m_torque * AxisValue, 0)), NAME_None, false);
-
-	FQuat myActorQuatR1 = m_wheelMeshR1->GetComponentQuat();
-	m_wheelMeshR1->AddTorqueInRadians(myActorQuatR1.RotateVector(FVector(0, m_torque * AxisValue, 0)), NAME_None, false);
-
-	FQuat myActorQuatR2 = m_wheelMeshR2->GetComponentQuat();
-	m_wheelMeshR2->AddTorqueInRadians(myActorQuatR2.RotateVector(FVector(0, m_torque * AxisValue, 0)), NAME_None, false);
-
-	FQuat myActorQuatR3 = m_wheelMeshR3->GetComponentQuat();
-	m_wheelMeshR3->AddTorqueInRadians(myActorQuatR3.RotateVector(FVector(0, m_torque * AxisValue, 0)), NAME_None, false);*/
-
-
-
-	//m_wheelMesh0->AddTorqueInRadians(FVector(0, 5000000, 0));
-	//m_wheelMesh1->AddTorqueInRadians(FVector(0, 5000000, 0));
-	//m_wheelMesh2->AddTorqueInRadians(FVector(0, 5000000, 0));
-	//m_wheelMesh3->AddTorqueInRadians(FVector(0, 5000000, 0));
-
-	
-
-	/*FRotator NewRotation2 = FRotator(0, AxisValue, 0);
-	m_wheelMesh0->AddLocalRotation(NewRotation2);
-	m_wheelMesh1->AddLocalRotation(NewRotation2);
-	m_wheelMesh2->AddLocalRotation(NewRotation2);
-	m_wheelMesh3->AddLocalRotation(NewRotation2);*/
-	
 }
 
 void ADrivableTank::TurnTank(float AxisValue)
 {
-	//m_root->AddTorque(FVector(0, 10000000 , 10000000 * AxisValue));
-	//m_root->AddTorqueInRadians(FVector(0, 10000000 , 10 * AxisValue));
-	//m_root->AddAngularImpulse(FVector(0, 0, 1000000 * AxisValue));
-
-	//FQuat myActorQuat = GetActorQuat();
-	//m_root->AddTorque(myActorQuat.RotateVector(FVector(0.0f, 0.0f, 10000000 * AxisValue)), NAME_None, false);
-
-	//m_turretRoot->GetComponentTransform.GetComponentRotation();
-	//FRotator NewRotation = GetActorRotation();
-	//FRotator NewRotation2 = m_root->GetComponentRotation();
-	//FRotator NewRotation2 = FRotator(0,0,0);
-	//FRotator NewRotation2 = FRotator(0,AxisValue,0);
-	//NewRotation2.Yaw += AxisValue;
-	//TurnAmount = FRotator(0,0,0);
-	//TurnAmount.Yaw = AxisValue;
-	//SetActorRotation(NewRotation);
-	//AddActorLocalRotation(NewRotation);
-	//m_turretRoot->GetComponentTransform().SetRotation(NewRotation);
-	//m_root->SetWorldRotation(NewRotation2);
 	
-	//m_root->SetRelativeRotation(NewRotation2);
-	//m_root->AddLocalRotation(NewRotation2);
-	//AddActorLocalRotation(NewRotation2);
-
-
-	//FRotator NewRotation2 = FRotator(0, AxisValue, 0);
-	//m_tankRootMesh->AddLocalRotation(NewRotation2);
-
-	/*for (int i = 0; i < 4; i++)
-	{
-		if (m_wheelMeshArray[i]->GetPhysicsAngularVelocityInRadians().Size() < 10.0f)
-		{
-			FQuat myActorQuat = m_wheelMeshArray[i]->GetComponentQuat();
-			m_wheelMeshArray[i]->AddTorqueInRadians(myActorQuat.RotateVector(FVector(0, m_turnTorque * -AxisValue, 0)), NAME_None, false);
-		}
-		else if (m_wheelMeshArray[i]->GetPhysicsAngularVelocityInRadians().X < 0.0f && AxisValue > 0)
-		{
-			FQuat myActorQuat = m_wheelMeshArray[i]->GetComponentQuat();
-			m_wheelMeshArray[i]->AddTorqueInRadians(myActorQuat.RotateVector(FVector(0, m_turnTorque * -AxisValue, 0)), NAME_None, false);
-		}
-		else
-		{
-			continue;
-		}
-	}*/
 	float tankVel = m_tankRootMesh->GetComponentVelocity().Size();
 	//UE_LOG(LogTemp, Warning, TEXT("Vel %f"), tankVel);
 	//Loop over 4 sets of 2 wheels 
@@ -588,87 +492,18 @@ void ADrivableTank::TurnTank(float AxisValue)
 			m_wheelMeshArray[i - 4]->AddTorqueInRadians(myActorQuat2.RotateVector(FVector(0, m_turnTorque * -AxisValue, 0)), NAME_None, false);
 		}
 
-		//else if (tankVel > 200)
-		//{
-		//	if (AxisValue < 0)
-		//	{
-		//		//Left Wheel spin backwards
-		//		FQuat myActorQuat = m_wheelMeshArray[i]->GetComponentQuat();
-		//		m_wheelMeshArray[i]->AddTorqueInRadians(myActorQuat.RotateVector(FVector(0, m_turnTorque * AxisValue, 0)), NAME_None, false);
-		//	}
-		//	else if (AxisValue > 0)
-		//	{
-		//		//Right Wheel spin backwards
-		//		FQuat myActorQuat = m_wheelMeshArray[i - 4]->GetComponentQuat();
-		//		m_wheelMeshArray[i - 4]->AddTorqueInRadians(myActorQuat.RotateVector(FVector(0, m_turnTorque * -AxisValue, 0)), NAME_None, false);
-		//	}
-		//}
-
-		////If A key is down and left wheel is spinning forward, slow it down
-		//else if (AxisValue < 0 && m_wheelMeshArray[i]->GetPhysicsAngularVelocityInRadians().X < 0.0f)
-		//{
-		//	FQuat myActorQuat = m_wheelMeshArray[i]->GetComponentQuat();
-		//	m_wheelMeshArray[i]->AddTorqueInRadians(myActorQuat.RotateVector(FVector(0, m_turnTorque * 3 * AxisValue, 0)), NAME_None, false);
-		//}
-		////If D key is down and right wheel is spinning forward, slow it down
-		//else if(AxisValue > 0 && m_wheelMeshArray[i - 4]->GetPhysicsAngularVelocityInRadians().X < 0.0f)
-		//{
-		//	FQuat myActorQuat = m_wheelMeshArray[i - 4]->GetComponentQuat();
-		//	m_wheelMeshArray[i - 4]->AddTorqueInRadians(myActorQuat.RotateVector(FVector(0, m_turnTorque * 3 * -AxisValue, 0)), NAME_None, false);
-		//}
 
 	}
 }
 
 
-//void ADrivableTank::TurnTankR()
-//{
-//	UE_LOG(LogTemp, Warning, TEXT("Your messageRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR"));
-//	//m_tankRootMesh->AddTorque(FVector(0,0,1000));
-//	//m_turretRoot->GetComponentTransform.GetComponentRotation();
-//	//FRotator NewRotation = GetActorRotation();
-//	//FRotator NewRotation = m_tankRootMesh->GetComponentRotation();
-//	//NewRotation.Yaw += AxisValue;
-//	////SetActorRotation(NewRotation);
-//	//m_tankRootMesh->SetRelativeRotation(NewRotation);
-//	//m_turretRoot->GetComponentTransform().SetRotation(NewRotation);
-//}
-
 void ADrivableTank::TurnTurretX(float AxisValue)
 {
-	//m_turretRoot->GetComponentTransform.GetComponentRotation();
-	//FRotator NewRotation = GetActorRotation();
-	
-	//FRotator NewRotation = m_turretMesh->GetComponentRotation();
-	//FRotator NewRotation = FRotator(0, AxisValue, 0);
-	//NewRotation.Yaw += AxisValue;
-	//SetActorRotation(NewRotation);
-	//m_turretMesh->SetRelativeRotation(NewRotation);
-	//m_turretMesh->AddLocalRotation(NewRotation);
-	//m_turretRoot->GetComponentTransform().SetRotation(NewRotation);
-
 	FRotator NewRotation = FRotator(0, AxisValue, 0);
 	m_turretMesh->AddLocalRotation(NewRotation);
 }
 
-void ADrivableTank::CreateTreads()
-{
-	if (treadBP)
-	{
-		//UE_LOG(LogTemp, Warning, TEXT("Your messageRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR"));
-		UWorld* world = GetWorld();
-		if (world)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Your messageRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR"));
-			FActorSpawnParameters spawnParams;
-			spawnParams.Owner = this;
 
-			FRotator rotation;
-			FVector spawnLocation = FVector(0, 0, 0);
-			world->SpawnActor<ATreadSpline>(treadBP, spawnLocation, rotation, spawnParams);
-		}
-	}
-}
 
 // Called to bind functionality to input
 void ADrivableTank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -684,5 +519,92 @@ void ADrivableTank::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 UPawnMovementComponent* ADrivableTank::GetMovementComponent() const
 {
 	return MyMovementComponent;
+}
+
+
+void ADrivableTank::SetupTreads(int i)
+{
+	FAttachmentTransformRules rules = FAttachmentTransformRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false);
+	FName name;
+	treadMeshes0[i]->SetStaticMesh(m_treadMesh);
+
+	treadMeshes0[i]->RelativeLocation = FVector(-(m_socketGap / 2) + i * 10.0f, 0.0f, 0.0f);
+	treadMeshes0[i]->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
+	treadMeshes0[i]->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+
+	name = *FString::Printf(TEXT("socketL00"));
+	treadMeshes0[i]->AttachToComponent(m_tankRootMesh, rules, name);
+
+
+	treadMeshes1[i]->SetStaticMesh(m_treadMesh);
+
+	treadMeshes1[i]->RelativeLocation = FVector(-(m_socketGap / 2) + i * 10.0f, 0.0f, 0.0f);
+	treadMeshes1[i]->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
+	treadMeshes1[i]->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+
+	name = *FString::Printf(TEXT("socketL01"));
+	treadMeshes1[i]->AttachToComponent(m_tankRootMesh, rules, name);
+
+
+	treadMeshes2[i]->SetStaticMesh(m_treadMesh);
+
+	treadMeshes2[i]->RelativeLocation = FVector(-(m_socketGap / 2) + i * 10.0f, 0.0f, 0.0f);
+	treadMeshes2[i]->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
+	treadMeshes2[i]->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+
+	name = *FString::Printf(TEXT("socketL02"));
+	treadMeshes2[i]->AttachToComponent(m_tankRootMesh, rules, name);
+
+
+	treadMeshes3[i]->SetStaticMesh(m_treadMesh);
+
+	treadMeshes3[i]->RelativeLocation = FVector(-(m_socketGap / 2) + i * 10.0f, 0.0f, 0.0f);
+	treadMeshes3[i]->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
+	treadMeshes3[i]->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+
+	name = *FString::Printf(TEXT("socketL03"));
+	treadMeshes3[i]->AttachToComponent(m_tankRootMesh, rules, name);
+
+
+	treadMeshes4[i]->SetStaticMesh(m_treadMesh);
+
+	treadMeshes4[i]->RelativeLocation = FVector(-(m_socketGap / 2) + i * 10.0f, 0.0f, 0.0f);
+	treadMeshes4[i]->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
+	treadMeshes4[i]->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+
+	name = *FString::Printf(TEXT("socketR00"));
+	treadMeshes4[i]->AttachToComponent(m_tankRootMesh, rules, name);
+
+
+	treadMeshes5[i]->SetStaticMesh(m_treadMesh);
+
+	treadMeshes5[i]->RelativeLocation = FVector(-(m_socketGap / 2) + i * 10.0f, 0.0f, 0.0f);
+	treadMeshes5[i]->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
+	treadMeshes5[i]->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+
+	name = *FString::Printf(TEXT("socketR01"));
+	treadMeshes5[i]->AttachToComponent(m_tankRootMesh, rules, name);
+
+
+	treadMeshes6[i]->SetStaticMesh(m_treadMesh);
+
+	treadMeshes6[i]->RelativeLocation = FVector(-(m_socketGap / 2) + i * 10.0f, 0.0f, 0.0f);
+	treadMeshes6[i]->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
+	treadMeshes6[i]->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+
+	name = *FString::Printf(TEXT("socketR02"));
+	treadMeshes6[i]->AttachToComponent(m_tankRootMesh, rules, name);
+
+
+	treadMeshes7[i]->SetStaticMesh(m_treadMesh);
+
+	treadMeshes7[i]->RelativeLocation = FVector(-(m_socketGap / 2) + i * 10.0f, 0.0f, 0.0f);
+	treadMeshes7[i]->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
+	treadMeshes7[i]->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+
+	name = *FString::Printf(TEXT("socketR03"));
+	treadMeshes7[i]->AttachToComponent(m_tankRootMesh, rules, name);
+
+
 }
 

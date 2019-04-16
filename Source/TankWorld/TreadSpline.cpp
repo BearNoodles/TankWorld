@@ -29,7 +29,7 @@ ATreadSpline::ATreadSpline()
 
 	//m_staticMesh = CreateDefaultSubobject<UStaticMesh>(TEXT("Mesh"));
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> treadMesh(TEXT("StaticMesh'/Game/StaticMeshes/treadMesh.treadMesh'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> treadMesh(TEXT("StaticMesh'/Game/StaticMeshes/Tread.Tread'"));
 
 	static ConstructorHelpers::FObjectFinder<UMaterial> goldMat(TEXT("Material'/Game/StarterContent/Materials/M_ColorGrid_LowSpec.M_ColorGrid_LowSpec'"));
 
