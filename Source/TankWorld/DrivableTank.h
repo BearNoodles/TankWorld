@@ -30,6 +30,7 @@ public:
 	void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent);
 
 
+
 private:
 
 	UPROPERTY(EditAnywhere)
@@ -92,6 +93,8 @@ private:
 		UMaterial* m_treadMat;
 	UPROPERTY(EditAnyWhere)
 		UMaterial* m_bodyMat;
+	UPROPERTY(EditAnyWhere)
+		UMaterial* m_turretMat;
 
 	int m_wheelCount = 8;
 
@@ -103,7 +106,9 @@ private:
 		TArray<UPhysicsConstraintComponent*> m_wheelConstraintArray;
 
 	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* m_turretMesh;
+		UStaticMeshComponent* m_turretMeshX;
+	UPROPERTY(EditAnywhere)
+		UStaticMeshComponent* m_turretMeshY;
 
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* m_barrelMesh;
@@ -117,6 +122,13 @@ private:
 	UPROPERTY(EditAnywhere)
 		USceneComponent* m_launchPoint;
 
+	UPROPERTY(EditAnyWhere)
+		TSubclassOf<AActor> ProjectileType;
+
+
+	UPROPERTY(EditAnywhere)
+		AActor* m_projectile;
+
 	int m_speed;
 	int m_ammoMax;
 	int m_ammoCurrent;
@@ -127,20 +139,17 @@ private:
 
 	void Accelerate(float AxisValue);
 	void TurnTank(float AxisValue);
+	void Fire();
 
 	void SetupTreads(int i);
 
 	void UpdateTreads();
 
-	/*void StartAccelerate();
-	void StartTurnTankL();
-	void StartTurnTankR();
-
-	void StopAccelerate();
-	void StopTurnTankL();
-	void StopTurnTankR();*/
 
 	void TurnTurretX(float AxisValue);
+	void TurnTurretY(float AxisValue);
+
+	void SetProjectileActor(AActor* object);
 
 	FVector CurrentVelocity;
 	float m_acceleration;
@@ -148,6 +157,9 @@ private:
 	float m_turnTorque;
 	float m_maxSpeed;
 	FRotator TurnAmount;
+
+	float m_turretStartHeight;
+	float m_turretCurrentHeight;
 
 	bool isAccelerating;
 	bool isTurningLeft;
