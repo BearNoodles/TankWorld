@@ -398,7 +398,7 @@ ADrivableTank::ADrivableTank()
 
 	m_springArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	m_springArm->SetupAttachment(m_turretMeshY);
-	m_springArm->RelativeRotation = FRotator(-15.0f, 0.0f, 0.0f);
+	m_springArm->RelativeRotation = FRotator(-20.0f, 0.0f, 0.0f);
 	m_springArm->RelativeLocation = FVector(-40.0f, 0.0f, 110.0f);
 	m_springArm->TargetArmLength = 400.0f;
 	m_springArm->bEnableCameraLag = true;
