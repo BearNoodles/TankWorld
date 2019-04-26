@@ -30,7 +30,6 @@ public:
 	void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent);
 
 
-
 private:
 
 	UPROPERTY(EditAnywhere)
@@ -40,11 +39,11 @@ private:
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* m_tankRootMesh; 
 	
-	UPROPERTY(EditAnywhere)
+	/*UPROPERTY(EditAnywhere)
 		UStaticMesh* m_treadMesh;
 
 	UPROPERTY(EditAnywhere)
-		TSubclassOf<class ATreadSpline> treadBP;
+		TSubclassOf<class ATreadSpline> treadBP;*/
 
 	//UPROPERTY(EditAnywhere)
 	//	UStaticMeshComponent* m_wheelMeshL0;
@@ -63,34 +62,15 @@ private:
 	//UPROPERTY(EditAnywhere)
 	//	UStaticMeshComponent* m_wheelMeshR3;
 
-	UPROPERTY(EditAnywhere)
+	//UPROPERTY(EditAnywhere)
 		TArray<UStaticMeshComponent*> m_wheelMeshArray;
 
-	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* meshTest;
-
-	UPROPERTY(EditAnywhere)
-		TArray<UStaticMeshComponent*> treadMeshes0;
-	UPROPERTY(EditAnywhere)
-		TArray<UStaticMeshComponent*> treadMeshes1;
-	UPROPERTY(EditAnywhere)
-		TArray<UStaticMeshComponent*> treadMeshes2;
-	UPROPERTY(EditAnywhere)
-		TArray<UStaticMeshComponent*> treadMeshes3;
-	UPROPERTY(EditAnywhere)
-		TArray<UStaticMeshComponent*> treadMeshes4;
-	UPROPERTY(EditAnywhere)
-		TArray<UStaticMeshComponent*> treadMeshes5;
-	UPROPERTY(EditAnywhere)
-		TArray<UStaticMeshComponent*> treadMeshes6;
-	UPROPERTY(EditAnywhere)
-		TArray<UStaticMeshComponent*> treadMeshes7;
 
 	UPROPERTY(EditAnywhere)
 		UMaterial* m_wheelMat;
 
-	UPROPERTY(EditAnyWhere)
-		UMaterial* m_treadMat;
+	//UPROPERTY(EditAnyWhere)
+		//UMaterial* m_treadMat;
 	UPROPERTY(EditAnyWhere)
 		UMaterial* m_bodyMat;
 	UPROPERTY(EditAnyWhere)
@@ -102,48 +82,74 @@ private:
 	FVector m_treadPosition;
 	FRotator m_treadRotation;
 
-	UPROPERTY(EditAnywhere)
+	//UPROPERTY(EditAnywhere)
 		TArray<UPhysicsConstraintComponent*> m_wheelConstraintArray;
 
-	UPROPERTY(EditAnywhere)
+	//UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* m_turretMeshX;
-	UPROPERTY(EditAnywhere)
+	//UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* m_turretMeshY;
 
-	UPROPERTY(EditAnywhere)
+	//UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* m_barrelMesh;
 
 	UPROPERTY(EditAnywhere)
 		USpringArmComponent* m_springArm;
 
-	UPROPERTY(EditAnywhere)
+	//UPROPERTY(EditAnywhere)
 		UCameraComponent* m_camera;
 
-	UPROPERTY(EditAnywhere)
+	//UPROPERTY(EditAnywhere)
 		USceneComponent* m_launchPoint;
 
-	UPROPERTY(EditAnyWhere)
-		TSubclassOf<AActor> ProjectileType;
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<AActor> m_projectileType1;
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<AActor> m_projectileType2;
+
+	UPROPERTY(EditAnywhere)
+		FString m_fireType;
+
+	UFUNCTION(BluePrintCallable)
+		FString GetFireType();
+
+	AActor* m_loadedProjectile;
+
+	bool m_isLoadedProjectile1;
+	bool m_isLoadedProjectile2;
+
+	bool m_fireReady;
+
+	float m_loadTimeMax;
+	float m_loadTimer;
+
+	UPROPERTY(EditAnywhere)
+		float m_loadTimeRate;
 
 
 	UPROPERTY(EditAnywhere)
 		AActor* m_projectile;
 
 	int m_speed;
-	int m_ammoMax;
-	int m_ammoCurrent;
+
+	UPROPERTY(EditAnywhere)
+		int m_ammoMax;
+
+	UPROPERTY(EditAnywhere)
+		int m_ammoCurrent;
+	
+	UPROPERTY(EditAnywhere)
+		float m_regenRate;
+
 	float m_ammoTimer;
-	float m_regenRate;
 
 	int m_socketGap = 80;
 
 	void Accelerate(float AxisValue);
 	void TurnTank(float AxisValue);
 	void Fire();
-
-	void SetupTreads(int i);
-
-	void UpdateTreads();
+	void Load1();
+	void Load2();
 
 
 	void TurnTurretX(float AxisValue);
@@ -153,7 +159,10 @@ private:
 
 	FVector CurrentVelocity;
 	float m_acceleration;
-	float m_torque;
+
+	UPROPERTY(EditAnywhere)
+		float m_torque;
+
 	float m_turnTorque;
 	float m_maxSpeed;
 	FRotator TurnAmount;
