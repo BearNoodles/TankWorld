@@ -38,29 +38,6 @@ private:
 
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* m_tankRootMesh; 
-	
-	/*UPROPERTY(EditAnywhere)
-		UStaticMesh* m_treadMesh;
-
-	UPROPERTY(EditAnywhere)
-		TSubclassOf<class ATreadSpline> treadBP;*/
-
-	//UPROPERTY(EditAnywhere)
-	//	UStaticMeshComponent* m_wheelMeshL0;
-	//UPROPERTY(EditAnywhere)
-	//	UStaticMeshComponent* m_wheelMeshL1;
-	//UPROPERTY(EditAnywhere)
-	//	UStaticMeshComponent* m_wheelMeshL2;
-	//UPROPERTY(EditAnywhere)
-	//	UStaticMeshComponent* m_wheelMeshL3;
-	//UPROPERTY(EditAnywhere)
-	//	UStaticMeshComponent* m_wheelMeshR0;
-	//UPROPERTY(EditAnywhere)
-	//	UStaticMeshComponent* m_wheelMeshR1;
-	//UPROPERTY(EditAnywhere)
-	//	UStaticMeshComponent* m_wheelMeshR2;
-	//UPROPERTY(EditAnywhere)
-	//	UStaticMeshComponent* m_wheelMeshR3;
 
 	//UPROPERTY(EditAnywhere)
 		TArray<UStaticMeshComponent*> m_wheelMeshArray;
@@ -150,6 +127,15 @@ private:
 	void Fire();
 	void Load1();
 	void Load2();
+	void AimIn();
+	void AimOut();
+
+	float m_cameraLag;
+
+	FVector m_farCameraPosition;
+	FVector m_nearCameraPosition;
+	FRotator m_farCameraRotation;
+	FRotator m_nearCameraRotation;
 
 
 	void TurnTurretX(float AxisValue);
@@ -163,7 +149,9 @@ private:
 	UPROPERTY(EditAnywhere)
 		float m_torque;
 
-	float m_turnTorque;
+	UPROPERTY(EditAnywhere)
+		float m_turnTorque;
+
 	float m_maxSpeed;
 	FRotator TurnAmount;
 

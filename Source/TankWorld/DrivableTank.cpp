@@ -32,6 +32,9 @@ ADrivableTank::ADrivableTank()
 	static ConstructorHelpers::FObjectFinder<UMaterial> patchMat(TEXT("Material'/Game/StarterContent/Materials/M_ColorGrid_LowSpec.M_ColorGrid_LowSpec'"));
 	static ConstructorHelpers::FObjectFinder<UMaterial> goldMat(TEXT("Material'/Game/StarterContent/Materials/M_Metal_Gold.M_Metal_Gold'"));
 	static ConstructorHelpers::FObjectFinder<UMaterial> clearMat(TEXT("Material'/Game/StarterContent/Materials/M_Metal_Gold.M_Metal_Gold'"));
+
+	const ConstructorHelpers::FObjectFinder<UObject> bodyPhysMat(TEXT("PhysicalMaterial'/Game/Slidey.Slidey'"));
+
 	//GetMesh()->Set
 	m_tankRootMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BodyMesh"));
 	m_tankRootMesh->SetupAttachment(m_root);
@@ -63,7 +66,12 @@ ADrivableTank::ADrivableTank()
 		}
 	}*/
 
-	m_tankRootMesh->SetAllMassScale(3.0f);
+	m_tankRootMesh->SetAllMassScale(27.0f);
+
+	if (bodyPhysMat.Succeeded())
+	{
+		m_tankRootMesh->SetPhysMaterialOverride((UPhysicalMaterial*)bodyPhysMat.Object);
+	}
 
 	m_tankRootMesh->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
 	m_tankRootMesh->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
@@ -322,15 +330,23 @@ ADrivableTank::ADrivableTank()
 
 	m_springArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	m_springArm->SetupAttachment(m_turretMeshY);
-	m_springArm->RelativeRotation = FRotator(-20.0f, 0.0f, 0.0f);
-	m_springArm->RelativeLocation = FVector(-40.0f, 0.0f, 110.0f);
+
+	m_farCameraRotation = FRotator(-20.0f, 0.0f, 0.0f);
+	m_nearCameraRotation = FRotator(0.0f, 0.0f, 0.0f);
+	m_springArm->RelativeRotation = m_farCameraRotation;
+
+	m_farCameraPosition = FVector(-40.0f, 0.0f, 110.0f);
+	m_nearCameraPosition = FVector(50.0f, 0.0f, 110.0f);
+	m_springArm->RelativeLocation = m_farCameraPosition;
+
 	m_springArm->TargetArmLength = 400.0f;
 	m_springArm->bEnableCameraLag = true;
-	m_springArm->CameraLagSpeed = 3.0f;
+	m_cameraLag = 3.0f;
+	m_springArm->CameraLagSpeed = m_cameraLag;
 
 	m_camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	m_camera->SetupAttachment(m_springArm, USpringArmComponent::SocketName);
-
+	//m_camera->
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
 	MyMovementComponent = CreateDefaultSubobject<UTankPawnMovementComponent>(TEXT("MovementComponent"));
@@ -340,14 +356,14 @@ ADrivableTank::ADrivableTank()
 
 	m_maxSpeed = 500;
 
-	m_torque = 3000000;
+	m_torque = 18000000;
 
-	m_turnTorque = 6000000;
+	m_turnTorque = m_torque * 1.5f;
 
 	m_turretStartHeight = m_turretMeshY->GetComponentRotation().Pitch;
 
 	m_turretCurrentHeight = 0;
-
+	
 	m_regenRate = 1;
 
 	m_loadTimer = 0;
@@ -532,6 +548,22 @@ void ADrivableTank::Load2()
 	m_isLoadedProjectile2 = true;
 }
 
+void ADrivableTank::AimIn()
+{
+	m_springArm->TargetArmLength = 80;
+	m_springArm->CameraLagSpeed = 0;
+	m_springArm->RelativeLocation = m_nearCameraPosition;
+	m_springArm->RelativeRotation = m_nearCameraRotation;
+}
+
+void ADrivableTank::AimOut()
+{
+	m_springArm->TargetArmLength = 400;
+	m_springArm->CameraLagSpeed = m_cameraLag;
+	m_springArm->RelativeLocation = m_farCameraPosition;
+	m_springArm->RelativeRotation = m_farCameraRotation;
+}
+
 void ADrivableTank::SetProjectileActor(AActor* object)
 {
 	m_projectile = object;
@@ -551,6 +583,8 @@ void ADrivableTank::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	InputComponent->BindAction("Fire", IE_Pressed, this, &ADrivableTank::Fire);
 	InputComponent->BindAction("Load1", IE_Pressed, this, &ADrivableTank::Load1);
 	InputComponent->BindAction("Load2", IE_Pressed, this, &ADrivableTank::Load2);
+	InputComponent->BindAction("AimIn", IE_Pressed, this, &ADrivableTank::AimIn);
+	InputComponent->BindAction("AimOut", IE_Released, this, &ADrivableTank::AimOut);
 }
 
 FString ADrivableTank::GetFireType()
