@@ -6,7 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/World.h"
-#include "TankPawnMovementComponent.h"
+//#include "TankPawnMovementComponent.h"
 
 
 // Sets default values
@@ -77,7 +77,6 @@ ADrivableTank::ADrivableTank()
 	m_tankRootMesh->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
 	m_tankRootMesh->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
 	m_tankRootMesh->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
-
 
 	FAttachmentTransformRules rules = FAttachmentTransformRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false);
 	FAttachmentTransformRules rules2 = FAttachmentTransformRules(EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false);
@@ -241,21 +240,28 @@ ADrivableTank::ADrivableTank()
 	m_springArm->RelativeRotation = m_farCameraRotation;
 
 	m_farCameraPosition = FVector(-40.0f, 0.0f, 110.0f);
-	m_nearCameraPosition = FVector(50.0f, 0.0f, 110.0f);
+	m_nearCameraPosition = FVector(-40.0f, 0.0f, 110.0f);
 	m_springArm->RelativeLocation = m_farCameraPosition;
 
-	m_springArm->TargetArmLength = 400.0f;
+	m_nearTargetSpringLength = 180.0f;
+	m_farTargetSpringLength = 400.0f;
+	m_springArm->TargetArmLength = m_farTargetSpringLength;
 	m_springArm->bEnableCameraLag = true;
 	m_cameraLag = 3.0f;
 	m_springArm->CameraLagSpeed = m_cameraLag;
+
 
 	m_camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	m_camera->SetupAttachment(m_springArm, USpringArmComponent::SocketName);
 	//m_camera->
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
-	MyMovementComponent = CreateDefaultSubobject<UTankPawnMovementComponent>(TEXT("MovementComponent"));
-	MyMovementComponent->UpdatedComponent = RootComponent;
+	m_zoomScale = 3.0f;
+	m_farFov = m_camera->FieldOfView;
+	m_nearFov = m_farFov / m_zoomScale;
+
+	//MyMovementComponent = CreateDefaultSubobject<UTankPawnMovementComponent>(TEXT("MovementComponent"));
+	//MyMovementComponent->UpdatedComponent = RootComponent;
 
 	m_speed = 300;
 
@@ -457,18 +463,20 @@ void ADrivableTank::Load2()
 
 void ADrivableTank::AimIn()
 {
-	m_springArm->TargetArmLength = 80;
+	m_springArm->TargetArmLength = m_nearTargetSpringLength;
 	m_springArm->CameraLagSpeed = 0;
 	m_springArm->RelativeLocation = m_nearCameraPosition;
 	m_springArm->RelativeRotation = m_nearCameraRotation;
+	m_camera->FieldOfView = m_farFov / m_zoomScale;
 }
 
 void ADrivableTank::AimOut()
 {
-	m_springArm->TargetArmLength = 400;
+	m_springArm->TargetArmLength = m_farTargetSpringLength;
 	m_springArm->CameraLagSpeed = m_cameraLag;
 	m_springArm->RelativeLocation = m_farCameraPosition;
 	m_springArm->RelativeRotation = m_farCameraRotation;
+	m_camera->FieldOfView = m_farFov;
 }
 
 void ADrivableTank::SetProjectileActor(AActor* object)
@@ -500,9 +508,9 @@ FString ADrivableTank::GetFireType()
 	//return  "";
 }
 
-UPawnMovementComponent* ADrivableTank::GetMovementComponent() const
-{
-	return MyMovementComponent;
-}
+//UPawnMovementComponent* ADrivableTank::GetMovementComponent() const
+//{
+//	return MyMovementComponent;
+//}
 
 

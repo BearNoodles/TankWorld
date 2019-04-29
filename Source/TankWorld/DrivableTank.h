@@ -131,6 +131,14 @@ private:
 	void AimOut();
 
 	float m_cameraLag;
+	float m_fov;
+	float m_nearFov;
+	float m_farFov;
+	float m_nearTargetSpringLength;
+	float m_farTargetSpringLength;
+
+	UPROPERTY(EditAnywhere)
+		float m_zoomScale;
 
 	FVector m_farCameraPosition;
 	FVector m_nearCameraPosition;
@@ -165,7 +173,7 @@ private:
 	bool isTurningLeft;
 	bool isTurningRight;
 
-	class UTankPawnMovementComponent* MyMovementComponent;
-	virtual UPawnMovementComponent* GetMovementComponent() const override;
+	//class UTankPawnMovementComponent* MyMovementComponent;
+	//virtual UPawnMovementComponent* GetMovementComponent() const override;
 
 };
