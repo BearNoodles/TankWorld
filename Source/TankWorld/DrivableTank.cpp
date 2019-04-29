@@ -33,7 +33,7 @@ ADrivableTank::ADrivableTank()
 	static ConstructorHelpers::FObjectFinder<UMaterial> goldMat(TEXT("Material'/Game/StarterContent/Materials/M_Metal_Gold.M_Metal_Gold'"));
 	static ConstructorHelpers::FObjectFinder<UMaterial> clearMat(TEXT("Material'/Game/StarterContent/Materials/M_Metal_Gold.M_Metal_Gold'"));
 
-	const ConstructorHelpers::FObjectFinder<UObject> bodyPhysMat(TEXT("PhysicalMaterial'/Game/Slidey.Slidey'"));
+	static ConstructorHelpers::FObjectFinder<UObject> bodyPhysMat(TEXT("PhysicalMaterial'/Game/Slidey.Slidey'"));
 
 	//GetMesh()->Set
 	m_tankRootMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BodyMesh"));
@@ -70,7 +70,8 @@ ADrivableTank::ADrivableTank()
 
 	if (bodyPhysMat.Succeeded())
 	{
-		m_tankRootMesh->SetPhysMaterialOverride((UPhysicalMaterial*)bodyPhysMat.Object);
+		//m_tankRootMesh->SetPhysMaterialOverride((UPhysicalMaterial*)bodyPhysMat.Object);
+		m_physMat = (UPhysicalMaterial*)bodyPhysMat.Object;
 	}
 
 	m_tankRootMesh->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
@@ -163,102 +164,6 @@ ADrivableTank::ADrivableTank()
 #pragma region MyRegion
 
 
-	//m_constraintL0 = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintL0"));
-	//m_constraintL0->ComponentName1.ComponentName = "WheelMeshL0";
-	//m_constraintL0->ComponentName2.ComponentName = "BodyMesh";
-	//m_constraintL0->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintL0->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintL0->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintL0->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
-	//m_constraintL0->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
-	//m_constraintL0->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
-	//m_constraintL0->SetDisableCollision(true);
-	//m_constraintL0->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL0"));
-	//
-	//m_constraintL1 = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintL1"));
-	//m_constraintL1->ComponentName1.ComponentName = "WheelMeshL1";
-	//m_constraintL1->ComponentName2.ComponentName = "BodyMesh";
-	//m_constraintL1->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintL1->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintL1->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintL1->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
-	//m_constraintL1->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
-	//m_constraintL1->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
-	//m_constraintL1->SetDisableCollision(true);
-	//m_constraintL1->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL1"));
-	//
-	//m_constraintL2 = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintL2"));
-	//m_constraintL2->ComponentName1.ComponentName = "WheelMeshL2";
-	//m_constraintL2->ComponentName2.ComponentName = "BodyMesh";
-	//m_constraintL2->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintL2->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintL2->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintL2->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
-	//m_constraintL2->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
-	//m_constraintL2->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
-	//m_constraintL2->SetDisableCollision(true);
-	//m_constraintL2->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL2"));
-	//
-	//m_constraintL3 = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintL3"));
-	//m_constraintL3->ComponentName1.ComponentName = "WheelMeshL3";
-	//m_constraintL3->ComponentName2.ComponentName = "BodyMesh";
-	//m_constraintL3->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintL3->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintL3->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintL3->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
-	//m_constraintL3->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
-	//m_constraintL3->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
-	//m_constraintL3->SetDisableCollision(true);
-	//m_constraintL3->AttachToComponent(m_tankRootMesh, rules, TEXT("socketL3"));
-	//
-	//m_constraintR0 = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintR0"));
-	//m_constraintR0->ComponentName1.ComponentName = "WheelMeshR0";
-	//m_constraintR0->ComponentName2.ComponentName = "BodyMesh";
-	//m_constraintR0->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintR0->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintR0->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintR0->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
-	//m_constraintR0->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
-	//m_constraintR0->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
-	//m_constraintR0->SetDisableCollision(true);
-	//m_constraintR0->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR0"));
-	//			
-	//m_constraintR1 = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintR1"));
-	//m_constraintR1->ComponentName1.ComponentName = "WheelMeshR1";
-	//m_constraintR1->ComponentName2.ComponentName = "BodyMesh";
-	//m_constraintR1->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintR1->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintR1->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintR1->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
-	//m_constraintR1->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
-	//m_constraintR1->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
-	//m_constraintR1->SetDisableCollision(true);
-	//m_constraintR1->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR1"));
-	//			
-	//m_constraintR2 = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintR2"));
-	//m_constraintR2->ComponentName1.ComponentName = "WheelMeshR2";
-	//m_constraintR2->ComponentName2.ComponentName = "BodyMesh";
-	//m_constraintR2->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintR2->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintR2->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintR2->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
-	//m_constraintR2->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
-	//m_constraintR2->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
-	//m_constraintR2->SetDisableCollision(true);
-	//m_constraintR2->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR2"));
-	//			
-	//m_constraintR3 = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("ConstraintR3"));
-	//m_constraintR3->ComponentName1.ComponentName = "WheelMeshR3";
-	//m_constraintR3->ComponentName2.ComponentName = "BodyMesh";
-	//m_constraintR3->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintR3->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintR3->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0.0f);
-	//m_constraintR3->SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 45);
-	//m_constraintR3->SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 45);
-	//m_constraintR3->SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 45);
-	//m_constraintR3->SetDisableCollision(true);
-	//m_constraintR3->AttachToComponent(m_tankRootMesh, rules, TEXT("socketR3"));
-
 #pragma endregion
 	m_turretMeshX = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TurretMesh"));
 	m_turretMeshX->SetupAttachment(m_tankRootMesh);
@@ -266,8 +171,8 @@ ADrivableTank::ADrivableTank()
 	m_turretMeshY->SetupAttachment(m_turretMeshX);
 	if (sphereMesh.Succeeded())
 	{
-		m_turretMeshX->SetStaticMesh(sphereMesh.Object);
-		m_turretMeshY->SetStaticMesh(sphereMesh.Object);
+		//m_turretMeshX->SetStaticMesh(sphereMesh.Object);
+		//m_turretMeshY->SetStaticMesh(sphereMesh.Object);
 		for (int i = 0; i < m_wheelCount; i++)
 		{
 			m_wheelMeshArray[i]->SetStaticMesh(sphereMesh.Object);
@@ -400,6 +305,9 @@ void ADrivableTank::BeginPlay()
 {
 	Super::BeginPlay();
 	//UE_LOG(LogTemp, Warning, TEXT("Your message111111111111111111111111111"));
+
+	m_tankRootMesh->SetPhysMaterialOverride(m_physMat);
+	
 }
 
 // Called every frame
@@ -470,7 +378,6 @@ void ADrivableTank::TurnTank(float AxisValue)
 			FQuat myActorQuat2 = m_wheelMeshArray[i - 4]->GetComponentQuat();
 			m_wheelMeshArray[i - 4]->AddTorqueInRadians(myActorQuat2.RotateVector(FVector(0, m_turnTorque * -AxisValue, 0)), NAME_None, false);
 		}
-
 
 	}
 }
@@ -573,13 +480,13 @@ void ADrivableTank::SetProjectileActor(AActor* object)
 void ADrivableTank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	
 	InputComponent->BindAxis("Accelerate", this, &ADrivableTank::Accelerate);
 	InputComponent->BindAxis("Turn Tank", this, &ADrivableTank::TurnTank);
-
+	
 	InputComponent->BindAxis("Turn Turret X", this, &ADrivableTank ::TurnTurretX);
 	InputComponent->BindAxis("Turn Turret Y", this, &ADrivableTank ::TurnTurretY);
-
+	
 	InputComponent->BindAction("Fire", IE_Pressed, this, &ADrivableTank::Fire);
 	InputComponent->BindAction("Load1", IE_Pressed, this, &ADrivableTank::Load1);
 	InputComponent->BindAction("Load2", IE_Pressed, this, &ADrivableTank::Load2);
@@ -590,6 +497,7 @@ void ADrivableTank::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 FString ADrivableTank::GetFireType()
 {
 	return  m_fireType;
+	//return  "";
 }
 
 UPawnMovementComponent* ADrivableTank::GetMovementComponent() const

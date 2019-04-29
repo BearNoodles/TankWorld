@@ -152,6 +152,9 @@ private:
 	UPROPERTY(EditAnywhere)
 		float m_turnTorque;
 
+	UPROPERTY(EditAnywhere)
+		UPhysicalMaterial* m_physMat;
+
 	float m_maxSpeed;
 	FRotator TurnAmount;
 
