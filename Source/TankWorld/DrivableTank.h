@@ -59,6 +59,9 @@ private:
 
 	int m_wheelCount = 8;
 
+	UPROPERTY(EditAnywhere)
+		float m_massScale;
+
 	//2 Projectile type which can be set
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<AActor> m_projectileType1;

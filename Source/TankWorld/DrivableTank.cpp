@@ -61,7 +61,7 @@ ADrivableTank::ADrivableTank()
 	}
 
 	//Significantly increases the scale of the tanks body weight
-	m_tankRootMesh->SetAllMassScale(27.0f);
+	m_massScale = 27.0f;
 
 	//Checks if the body physical material was found before setting it to the variable
 	if (bodyPhysMat.Succeeded())
@@ -70,7 +70,7 @@ ADrivableTank::ADrivableTank()
 	}
 
 	//Positions, scales and rotates the tank body
-	m_tankRootMesh->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
+	m_tankRootMesh->RelativeLocation = FVector(0.0f, 0.0f, 80.0f);
 	m_tankRootMesh->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
 	m_tankRootMesh->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
 
@@ -310,6 +310,7 @@ void ADrivableTank::BeginPlay()
 
 void ADrivableTank::OnConstruction(const FTransform& Transform)
 {
+	m_tankRootMesh->SetAllMassScale(m_massScale);
 	m_turnTorque = m_torque * 1.5f;
 	if (m_bodyMat != NULL)
 	{
