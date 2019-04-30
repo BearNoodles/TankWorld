@@ -23,6 +23,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void OnConstruction(const FTransform& Transform) override;
 
 public:
 	// Called every frame
@@ -31,105 +32,74 @@ public:
 
 
 private:
+	//Root component and meshes which make up tank
+	USceneComponent* m_root;
+	UStaticMeshComponent* m_tankRootMesh; 
+	TArray<UStaticMeshComponent*> m_wheelMeshArray;
+	TArray<UPhysicsConstraintComponent*> m_wheelConstraintArray;
+	UStaticMeshComponent* m_turretMeshX;
+	UStaticMeshComponent* m_turretMeshY;
+	UStaticMeshComponent* m_barrelMesh;
 
-	UPROPERTY(EditAnywhere)
-		USceneComponent* m_root;
-		//UStaticMeshComponent* m_root;
+	//Spring arm and camera
+	USpringArmComponent* m_springArm;
+	UCameraComponent* m_camera;
 
-	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* m_tankRootMesh; 
-
-	//UPROPERTY(EditAnywhere)
-		TArray<UStaticMeshComponent*> m_wheelMeshArray;
-
-
+	//Materials and physics material
 	UPROPERTY(EditAnywhere)
 		UMaterial* m_wheelMat;
-
-	//UPROPERTY(EditAnyWhere)
-		//UMaterial* m_treadMat;
 	UPROPERTY(EditAnyWhere)
 		UMaterial* m_bodyMat;
 	UPROPERTY(EditAnyWhere)
 		UMaterial* m_turretMat;
+	UPROPERTY(EditAnyWhere)
+		UMaterial* m_barrelMat;
+	UPROPERTY(EditAnywhere)
+		UPhysicalMaterial* m_bodyPhysMat;
 
 	int m_wheelCount = 8;
 
-
-	FVector m_treadPosition;
-	FRotator m_treadRotation;
-
-	//UPROPERTY(EditAnywhere)
-		TArray<UPhysicsConstraintComponent*> m_wheelConstraintArray;
-
-	//UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* m_turretMeshX;
-	//UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* m_turretMeshY;
-
-	//UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* m_barrelMesh;
-
-	UPROPERTY(EditAnywhere)
-		USpringArmComponent* m_springArm;
-
-	//UPROPERTY(EditAnywhere)
-		UCameraComponent* m_camera;
-
-	//UPROPERTY(EditAnywhere)
-		USceneComponent* m_launchPoint;
-
+	//2 Projectile type which can be set
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<AActor> m_projectileType1;
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<AActor> m_projectileType2;
 
+	//FireType strinf for displaying which type of projectile is loaded on the HUD
+	FString m_fireType;
 	UPROPERTY(EditAnywhere)
-		FString m_fireType;
+		FString m_fireType1;
+	UPROPERTY(EditAnywhere)
+		FString m_fireType2;
 
-	UFUNCTION(BluePrintCallable)
-		FString GetFireType();
+	//Torque for turning the wheels
+	UPROPERTY(EditAnywhere)
+		float m_torque;
+	float m_turnTorque;
 
-	AActor* m_loadedProjectile;
+	UPROPERTY(EditAnywhere)
+		float m_maxSpeed;
 
+	//Turrets starting aim height
+	float m_turretStartHeight;
+	float m_turretCurrentHeight;
+
+	//bools to check which projectile is loaded
 	bool m_isLoadedProjectile1;
 	bool m_isLoadedProjectile2;
 
+	//bool to check if the tank is ready to fire
 	bool m_fireReady;
 
+	//timer floats for loading projectiles
 	float m_loadTimeMax;
 	float m_loadTimer;
 
+	//how fast the tank loads projectiles
 	UPROPERTY(EditAnywhere)
 		float m_loadTimeRate;
 
-
-	UPROPERTY(EditAnywhere)
-		AActor* m_projectile;
-
-	int m_speed;
-
-	UPROPERTY(EditAnywhere)
-		int m_ammoMax;
-
-	UPROPERTY(EditAnywhere)
-		int m_ammoCurrent;
-	
-	UPROPERTY(EditAnywhere)
-		float m_regenRate;
-
-	float m_ammoTimer;
-
-	int m_socketGap = 80;
-
-	void Accelerate(float AxisValue);
-	void TurnTank(float AxisValue);
-	void Fire();
-	void Load1();
-	void Load2();
-	void AimIn();
-	void AimOut();
-
+	//variables for camera effects
 	float m_cameraLag;
 	float m_fov;
 	float m_nearFov;
@@ -137,43 +107,29 @@ private:
 	float m_nearTargetSpringLength;
 	float m_farTargetSpringLength;
 
+	//Zoom amount when aiming in
 	UPROPERTY(EditAnywhere)
 		float m_zoomScale;
 
+	//cameras position and rotation values for each zoom
 	FVector m_farCameraPosition;
 	FVector m_nearCameraPosition;
 	FRotator m_farCameraRotation;
 	FRotator m_nearCameraRotation;
 
-
+	//Input functions bound to keys
+	void Accelerate(float AxisValue);
+	void TurnTank(float AxisValue);
 	void TurnTurretX(float AxisValue);
 	void TurnTurretY(float AxisValue);
+	void Fire();
+	void Load1();
+	void Load2();
+	void AimIn();
+	void AimOut();
 
-	void SetProjectileActor(AActor* object);
-
-	FVector CurrentVelocity;
-	float m_acceleration;
-
-	UPROPERTY(EditAnywhere)
-		float m_torque;
-
-	UPROPERTY(EditAnywhere)
-		float m_turnTorque;
-
-	UPROPERTY(EditAnywhere)
-		UPhysicalMaterial* m_physMat;
-
-	float m_maxSpeed;
-	FRotator TurnAmount;
-
-	float m_turretStartHeight;
-	float m_turretCurrentHeight;
-
-	bool isAccelerating;
-	bool isTurningLeft;
-	bool isTurningRight;
-
-	//class UTankPawnMovementComponent* MyMovementComponent;
-	//virtual UPawnMovementComponent* GetMovementComponent() const override;
+	//Returns which fire type is currently loaded
+	UFUNCTION(BluePrintCallable)
+		FString GetFireType();
 
 };
